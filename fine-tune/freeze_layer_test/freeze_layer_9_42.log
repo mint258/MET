@@ -1,0 +1,785 @@
+Using device: cuda
+Selected target_properties: ['dipole']
+Available target properties: ['rot_A', 'rot_B', 'rot_C', 'dipole', 'polarizability', 'HOMO_energy', 'LUMO_energy', 'gap', 'R2', 'zpve', 'U0', 'U298', 'H298', 'G298', 'Cv']
+Total samples: 1000, Training: 800, Validation: 200
+Pretrained ComENetAutoEncoder layers:
+0: feature1 (torsion_emb)
+1: feature2 (angle_emb)
+2: emb_z (EmbeddingBlock)
+3: interaction_blocks.0 (SimpleInteractionBlock)
+4: interaction_blocks.1 (SimpleInteractionBlock)
+5: interaction_blocks.2 (SimpleInteractionBlock)
+6: interaction_blocks.3 (SimpleInteractionBlock)
+7: lins.0 (Linear)
+8: lins.1 (Linear)
+9: lins.2 (Linear)
+10: encoder (Sequential)
+11: transformer_decoders_z.0 (TransformerEncoder)
+12: output_layers_z.0 (Linear)
+冻结层 0: feature1 (torsion_emb)
+冻结层 1: feature2 (angle_emb)
+冻结层 2: emb_z (EmbeddingBlock)
+冻结层 3: interaction_blocks.0 (SimpleInteractionBlock)
+冻结层 4: interaction_blocks.1 (SimpleInteractionBlock)
+冻结层 5: interaction_blocks.2 (SimpleInteractionBlock)
+冻结层 6: interaction_blocks.3 (SimpleInteractionBlock)
+冻结层 7: lins.0 (Linear)
+冻结层 8: lins.1 (Linear)
+冻结层 9: lins.2 (Linear)
+
+Frozen layers status:
+emb_z.emb.weight: Frozen
+interaction_blocks.0.conv1.lin_rel.weight: Frozen
+interaction_blocks.0.conv1.lin_rel.bias: Frozen
+interaction_blocks.0.conv1.lin_root.weight: Frozen
+interaction_blocks.0.conv2.lin_rel.weight: Frozen
+interaction_blocks.0.conv2.lin_rel.bias: Frozen
+interaction_blocks.0.conv2.lin_root.weight: Frozen
+interaction_blocks.0.lin1.weight: Frozen
+interaction_blocks.0.lin1.bias: Frozen
+interaction_blocks.0.lin2.weight: Frozen
+interaction_blocks.0.lin2.bias: Frozen
+interaction_blocks.0.lin_cat.weight: Frozen
+interaction_blocks.0.lin_cat.bias: Frozen
+interaction_blocks.0.norm.weight: Frozen
+interaction_blocks.0.norm.bias: Frozen
+interaction_blocks.0.norm.mean_scale: Frozen
+interaction_blocks.0.lin_feature1.lin1.weight: Frozen
+interaction_blocks.0.lin_feature1.lin2.weight: Frozen
+interaction_blocks.0.lin_feature2.lin1.weight: Frozen
+interaction_blocks.0.lin_feature2.lin2.weight: Frozen
+interaction_blocks.0.lin.weight: Frozen
+interaction_blocks.0.lin.bias: Frozen
+interaction_blocks.0.lins.0.weight: Frozen
+interaction_blocks.0.lins.0.bias: Frozen
+interaction_blocks.0.lins.1.weight: Frozen
+interaction_blocks.0.lins.1.bias: Frozen
+interaction_blocks.0.lins.2.weight: Frozen
+interaction_blocks.0.lins.2.bias: Frozen
+interaction_blocks.0.lins.3.weight: Frozen
+interaction_blocks.0.lins.3.bias: Frozen
+interaction_blocks.0.final.weight: Frozen
+interaction_blocks.0.final.bias: Frozen
+interaction_blocks.1.conv1.lin_rel.weight: Frozen
+interaction_blocks.1.conv1.lin_rel.bias: Frozen
+interaction_blocks.1.conv1.lin_root.weight: Frozen
+interaction_blocks.1.conv2.lin_rel.weight: Frozen
+interaction_blocks.1.conv2.lin_rel.bias: Frozen
+interaction_blocks.1.conv2.lin_root.weight: Frozen
+interaction_blocks.1.lin1.weight: Frozen
+interaction_blocks.1.lin1.bias: Frozen
+interaction_blocks.1.lin2.weight: Frozen
+interaction_blocks.1.lin2.bias: Frozen
+interaction_blocks.1.lin_cat.weight: Frozen
+interaction_blocks.1.lin_cat.bias: Frozen
+interaction_blocks.1.norm.weight: Frozen
+interaction_blocks.1.norm.bias: Frozen
+interaction_blocks.1.norm.mean_scale: Frozen
+interaction_blocks.1.lin_feature1.lin1.weight: Frozen
+interaction_blocks.1.lin_feature1.lin2.weight: Frozen
+interaction_blocks.1.lin_feature2.lin1.weight: Frozen
+interaction_blocks.1.lin_feature2.lin2.weight: Frozen
+interaction_blocks.1.lin.weight: Frozen
+interaction_blocks.1.lin.bias: Frozen
+interaction_blocks.1.lins.0.weight: Frozen
+interaction_blocks.1.lins.0.bias: Frozen
+interaction_blocks.1.lins.1.weight: Frozen
+interaction_blocks.1.lins.1.bias: Frozen
+interaction_blocks.1.lins.2.weight: Frozen
+interaction_blocks.1.lins.2.bias: Frozen
+interaction_blocks.1.lins.3.weight: Frozen
+interaction_blocks.1.lins.3.bias: Frozen
+interaction_blocks.1.final.weight: Frozen
+interaction_blocks.1.final.bias: Frozen
+interaction_blocks.2.conv1.lin_rel.weight: Frozen
+interaction_blocks.2.conv1.lin_rel.bias: Frozen
+interaction_blocks.2.conv1.lin_root.weight: Frozen
+interaction_blocks.2.conv2.lin_rel.weight: Frozen
+interaction_blocks.2.conv2.lin_rel.bias: Frozen
+interaction_blocks.2.conv2.lin_root.weight: Frozen
+interaction_blocks.2.lin1.weight: Frozen
+interaction_blocks.2.lin1.bias: Frozen
+interaction_blocks.2.lin2.weight: Frozen
+interaction_blocks.2.lin2.bias: Frozen
+interaction_blocks.2.lin_cat.weight: Frozen
+interaction_blocks.2.lin_cat.bias: Frozen
+interaction_blocks.2.norm.weight: Frozen
+interaction_blocks.2.norm.bias: Frozen
+interaction_blocks.2.norm.mean_scale: Frozen
+interaction_blocks.2.lin_feature1.lin1.weight: Frozen
+interaction_blocks.2.lin_feature1.lin2.weight: Frozen
+interaction_blocks.2.lin_feature2.lin1.weight: Frozen
+interaction_blocks.2.lin_feature2.lin2.weight: Frozen
+interaction_blocks.2.lin.weight: Frozen
+interaction_blocks.2.lin.bias: Frozen
+interaction_blocks.2.lins.0.weight: Frozen
+interaction_blocks.2.lins.0.bias: Frozen
+interaction_blocks.2.lins.1.weight: Frozen
+interaction_blocks.2.lins.1.bias: Frozen
+interaction_blocks.2.lins.2.weight: Frozen
+interaction_blocks.2.lins.2.bias: Frozen
+interaction_blocks.2.lins.3.weight: Frozen
+interaction_blocks.2.lins.3.bias: Frozen
+interaction_blocks.2.final.weight: Frozen
+interaction_blocks.2.final.bias: Frozen
+interaction_blocks.3.conv1.lin_rel.weight: Frozen
+interaction_blocks.3.conv1.lin_rel.bias: Frozen
+interaction_blocks.3.conv1.lin_root.weight: Frozen
+interaction_blocks.3.conv2.lin_rel.weight: Frozen
+interaction_blocks.3.conv2.lin_rel.bias: Frozen
+interaction_blocks.3.conv2.lin_root.weight: Frozen
+interaction_blocks.3.lin1.weight: Frozen
+interaction_blocks.3.lin1.bias: Frozen
+interaction_blocks.3.lin2.weight: Frozen
+interaction_blocks.3.lin2.bias: Frozen
+interaction_blocks.3.lin_cat.weight: Frozen
+interaction_blocks.3.lin_cat.bias: Frozen
+interaction_blocks.3.norm.weight: Frozen
+interaction_blocks.3.norm.bias: Frozen
+interaction_blocks.3.norm.mean_scale: Frozen
+interaction_blocks.3.lin_feature1.lin1.weight: Frozen
+interaction_blocks.3.lin_feature1.lin2.weight: Frozen
+interaction_blocks.3.lin_feature2.lin1.weight: Frozen
+interaction_blocks.3.lin_feature2.lin2.weight: Frozen
+interaction_blocks.3.lin.weight: Frozen
+interaction_blocks.3.lin.bias: Frozen
+interaction_blocks.3.lins.0.weight: Frozen
+interaction_blocks.3.lins.0.bias: Frozen
+interaction_blocks.3.lins.1.weight: Frozen
+interaction_blocks.3.lins.1.bias: Frozen
+interaction_blocks.3.lins.2.weight: Frozen
+interaction_blocks.3.lins.2.bias: Frozen
+interaction_blocks.3.lins.3.weight: Frozen
+interaction_blocks.3.lins.3.bias: Frozen
+interaction_blocks.3.final.weight: Frozen
+interaction_blocks.3.final.bias: Frozen
+lins.0.weight: Frozen
+lins.0.bias: Frozen
+lins.1.weight: Frozen
+lins.1.bias: Frozen
+lins.2.weight: Frozen
+lins.2.bias: Frozen
+encoder.0.weight: Trainable
+encoder.0.bias: Trainable
+transformer_decoders_z.0.layers.0.self_attn.in_proj_weight: Trainable
+transformer_decoders_z.0.layers.0.self_attn.in_proj_bias: Trainable
+transformer_decoders_z.0.layers.0.self_attn.out_proj.weight: Trainable
+transformer_decoders_z.0.layers.0.self_attn.out_proj.bias: Trainable
+transformer_decoders_z.0.layers.0.linear1.weight: Trainable
+transformer_decoders_z.0.layers.0.linear1.bias: Trainable
+transformer_decoders_z.0.layers.0.linear2.weight: Trainable
+transformer_decoders_z.0.layers.0.linear2.bias: Trainable
+transformer_decoders_z.0.layers.0.norm1.weight: Trainable
+transformer_decoders_z.0.layers.0.norm1.bias: Trainable
+transformer_decoders_z.0.layers.0.norm2.weight: Trainable
+transformer_decoders_z.0.layers.0.norm2.bias: Trainable
+output_layers_z.0.weight: Trainable
+output_layers_z.0.bias: Trainable
+模型的总可训练参数量: 1026435
+
+Epoch 1/1000
+Training Loss: 1.27754262, Training R2: -0.260244
+Validation Loss: 1.14831448, Validation R2: -0.025306
+Saved best model with validation R2 -0.025306 to best_finetuned_model.pth
+
+Epoch 2/1000
+Training Loss: 1.17377517, Training R2: -0.158975
+Validation Loss: 1.14595115, Validation R2: -0.059119
+
+Epoch 3/1000
+Training Loss: 1.11598287, Training R2: 0.006630
+Validation Loss: 1.12187266, Validation R2: 0.007311
+Saved best model with validation R2 0.007311 to best_finetuned_model.pth
+
+Epoch 4/1000
+Training Loss: 1.08687048, Training R2: 0.000444
+Validation Loss: 1.09490049, Validation R2: 0.071118
+Saved best model with validation R2 0.071118 to best_finetuned_model.pth
+
+Epoch 5/1000
+Training Loss: 1.08312788, Training R2: 0.088497
+Validation Loss: 1.08622146, Validation R2: 0.023653
+
+Epoch 6/1000
+Training Loss: 1.05637638, Training R2: 0.042280
+Validation Loss: 1.06717432, Validation R2: 0.126062
+Saved best model with validation R2 0.126062 to best_finetuned_model.pth
+
+Epoch 7/1000
+Training Loss: 1.07157938, Training R2: 0.114084
+Validation Loss: 1.08463597, Validation R2: 0.020994
+
+Epoch 8/1000
+Training Loss: 1.05502347, Training R2: 0.042692
+Validation Loss: 1.07058465, Validation R2: 0.065234
+
+Epoch 9/1000
+Training Loss: 1.02668516, Training R2: 0.116067
+Validation Loss: 1.06098199, Validation R2: 0.124842
+
+Epoch 10/1000
+Training Loss: 1.02167670, Training R2: 0.151695
+Validation Loss: 1.04764819, Validation R2: 0.128701
+Saved best model with validation R2 0.128701 to best_finetuned_model.pth
+
+Epoch 11/1000
+Training Loss: 1.00263567, Training R2: 0.162592
+Validation Loss: 1.04914868, Validation R2: 0.100683
+
+Epoch 12/1000
+Training Loss: 0.98874528, Training R2: 0.176646
+Validation Loss: 1.06038904, Validation R2: 0.052324
+
+Epoch 13/1000
+Training Loss: 0.98686023, Training R2: 0.135880
+Validation Loss: 1.10482013, Validation R2: 0.088744
+
+Epoch 14/1000
+Training Loss: 1.03991889, Training R2: 0.151384
+Validation Loss: 1.05088222, Validation R2: 0.074485
+
+Epoch 15/1000
+Training Loss: 0.97560131, Training R2: 0.198395
+Validation Loss: 1.02332246, Validation R2: 0.143511
+Saved best model with validation R2 0.143511 to best_finetuned_model.pth
+
+Epoch 16/1000
+Training Loss: 0.98167201, Training R2: 0.146833
+Validation Loss: 1.03585231, Validation R2: 0.155289
+Saved best model with validation R2 0.155289 to best_finetuned_model.pth
+
+Epoch 17/1000
+Training Loss: 1.03600010, Training R2: 0.169858
+Validation Loss: 1.04284418, Validation R2: 0.088954
+
+Epoch 18/1000
+Training Loss: 1.00886252, Training R2: 0.092756
+Validation Loss: 1.03947711, Validation R2: 0.153308
+
+Epoch 19/1000
+Training Loss: 1.03182568, Training R2: 0.169779
+Validation Loss: 1.03748107, Validation R2: 0.156171
+Saved best model with validation R2 0.156171 to best_finetuned_model.pth
+
+Epoch 20/1000
+Training Loss: 1.00657568, Training R2: 0.158193
+Validation Loss: 1.05882490, Validation R2: 0.078458
+
+Epoch 21/1000
+Training Loss: 0.99807573, Training R2: 0.177499
+Validation Loss: 1.04851222, Validation R2: 0.150603
+
+Epoch 22/1000
+Training Loss: 0.99290657, Training R2: 0.189755
+Validation Loss: 1.05312610, Validation R2: 0.098275
+
+Epoch 23/1000
+Training Loss: 0.97823357, Training R2: 0.188163
+Validation Loss: 1.03958237, Validation R2: 0.151373
+
+Epoch 24/1000
+Training Loss: 0.96496300, Training R2: 0.206777
+Validation Loss: 1.06013954, Validation R2: 0.048436
+
+Epoch 25/1000
+Training Loss: 0.98266777, Training R2: 0.155944
+Validation Loss: 1.03925753, Validation R2: 0.103088
+
+Epoch 26/1000
+Training Loss: 0.99797557, Training R2: 0.117718
+Validation Loss: 1.04060853, Validation R2: 0.129065
+
+Epoch 27/1000
+Training Loss: 0.97455845, Training R2: 0.211787
+Validation Loss: 1.03628612, Validation R2: 0.105095
+
+Epoch 28/1000
+Training Loss: 0.96116474, Training R2: 0.171430
+Validation Loss: 1.03068793, Validation R2: 0.133558
+
+Epoch 29/1000
+Training Loss: 0.94950261, Training R2: 0.223914
+Validation Loss: 1.02642286, Validation R2: 0.134244
+
+Epoch 30/1000
+Training Loss: 0.94455410, Training R2: 0.223157
+Validation Loss: 1.02762794, Validation R2: 0.137974
+
+Epoch 31/1000
+Training Loss: 0.95825981, Training R2: 0.230651
+Validation Loss: 1.06861174, Validation R2: 0.012117
+
+Epoch 32/1000
+Training Loss: 0.97124670, Training R2: 0.157275
+Validation Loss: 1.06315577, Validation R2: 0.119842
+
+Epoch 33/1000
+Training Loss: 0.96130387, Training R2: 0.233023
+Validation Loss: 1.07766759, Validation R2: 0.003228
+
+Epoch 34/1000
+Training Loss: 0.95786557, Training R2: 0.188339
+Validation Loss: 1.03781724, Validation R2: 0.128613
+
+Epoch 35/1000
+Training Loss: 0.94013795, Training R2: 0.221548
+Validation Loss: 1.04222214, Validation R2: 0.072119
+
+Epoch 36/1000
+Training Loss: 0.93880930, Training R2: 0.226929
+Validation Loss: 1.06502414, Validation R2: 0.038237
+
+Epoch 37/1000
+Training Loss: 0.99217484, Training R2: 0.129949
+Validation Loss: 1.03186035, Validation R2: 0.138297
+
+Epoch 38/1000
+Training Loss: 0.93429818, Training R2: 0.249331
+Validation Loss: 1.05086243, Validation R2: 0.072591
+
+Epoch 39/1000
+Training Loss: 0.93749600, Training R2: 0.207159
+Validation Loss: 1.02799416, Validation R2: 0.142965
+
+Epoch 40/1000
+Epoch 00040: reducing learning rate of group 0 to 5.0000e-05.
+Training Loss: 0.93143221, Training R2: 0.250326
+Validation Loss: 1.04089928, Validation R2: 0.077249
+
+Epoch 41/1000
+学习率已减少 1 次
+Training Loss: 0.92860637, Training R2: 0.219153
+Validation Loss: 1.03076541, Validation R2: 0.134637
+
+Epoch 42/1000
+Training Loss: 0.95489243, Training R2: 0.248158
+Validation Loss: 1.02766192, Validation R2: 0.128694
+
+Epoch 43/1000
+Training Loss: 0.92895890, Training R2: 0.239124
+Validation Loss: 1.05242717, Validation R2: 0.059207
+
+Epoch 44/1000
+Training Loss: 0.93293548, Training R2: 0.211374
+Validation Loss: 1.03298485, Validation R2: 0.129908
+
+Epoch 45/1000
+Training Loss: 0.92250755, Training R2: 0.263948
+Validation Loss: 1.03578722, Validation R2: 0.124103
+
+Epoch 46/1000
+Training Loss: 0.91601707, Training R2: 0.252514
+Validation Loss: 1.03620279, Validation R2: 0.120052
+
+Epoch 47/1000
+Training Loss: 0.91155315, Training R2: 0.259935
+Validation Loss: 1.03503215, Validation R2: 0.124176
+
+Epoch 48/1000
+Training Loss: 0.91091322, Training R2: 0.264206
+Validation Loss: 1.03982913, Validation R2: 0.091910
+
+Epoch 49/1000
+Training Loss: 0.91660785, Training R2: 0.237060
+Validation Loss: 1.03556812, Validation R2: 0.122696
+
+Epoch 50/1000
+Training Loss: 0.92318075, Training R2: 0.266158
+Validation Loss: 1.03394198, Validation R2: 0.106378
+
+Epoch 51/1000
+Training Loss: 0.91293435, Training R2: 0.240680
+Validation Loss: 1.03122175, Validation R2: 0.111179
+
+Epoch 52/1000
+Training Loss: 0.91139871, Training R2: 0.268301
+Validation Loss: 1.03002298, Validation R2: 0.111125
+
+Epoch 53/1000
+Training Loss: 0.93033509, Training R2: 0.218414
+Validation Loss: 1.03060138, Validation R2: 0.102781
+
+Epoch 54/1000
+Training Loss: 0.90842897, Training R2: 0.260071
+Validation Loss: 1.02618349, Validation R2: 0.119815
+
+Epoch 55/1000
+Training Loss: 0.91418679, Training R2: 0.243589
+Validation Loss: 1.02773547, Validation R2: 0.128977
+
+Epoch 56/1000
+Training Loss: 0.94093415, Training R2: 0.258277
+Validation Loss: 1.03311038, Validation R2: 0.126662
+
+Epoch 57/1000
+Training Loss: 0.91110818, Training R2: 0.249585
+Validation Loss: 1.03764546, Validation R2: 0.090730
+
+Epoch 58/1000
+Training Loss: 0.90201937, Training R2: 0.265414
+Validation Loss: 1.04273808, Validation R2: 0.128172
+
+Epoch 59/1000
+Training Loss: 0.91394423, Training R2: 0.273730
+Validation Loss: 1.04731274, Validation R2: 0.055800
+
+Epoch 60/1000
+Training Loss: 0.94566165, Training R2: 0.187977
+Validation Loss: 1.03625798, Validation R2: 0.131573
+
+Epoch 61/1000
+Epoch 00061: reducing learning rate of group 0 to 2.5000e-05.
+Training Loss: 0.94342544, Training R2: 0.255357
+Validation Loss: 1.02872002, Validation R2: 0.134485
+
+Epoch 62/1000
+学习率已减少 2 次
+Training Loss: 0.90555387, Training R2: 0.272429
+Validation Loss: 1.02975464, Validation R2: 0.098076
+
+Epoch 63/1000
+Training Loss: 0.90225639, Training R2: 0.257240
+Validation Loss: 1.02688015, Validation R2: 0.129146
+
+Epoch 64/1000
+Training Loss: 0.89851188, Training R2: 0.280442
+Validation Loss: 1.03042495, Validation R2: 0.125451
+
+Epoch 65/1000
+Training Loss: 0.89561869, Training R2: 0.274962
+Validation Loss: 1.03181195, Validation R2: 0.114364
+
+Epoch 66/1000
+Training Loss: 0.89538211, Training R2: 0.268673
+Validation Loss: 1.03039706, Validation R2: 0.123172
+
+Epoch 67/1000
+Training Loss: 0.89319688, Training R2: 0.278306
+Validation Loss: 1.03139377, Validation R2: 0.127408
+
+Epoch 68/1000
+Training Loss: 0.89354208, Training R2: 0.278060
+Validation Loss: 1.03153193, Validation R2: 0.114688
+
+Epoch 69/1000
+Training Loss: 0.89350962, Training R2: 0.269651
+Validation Loss: 1.02987790, Validation R2: 0.121052
+
+Epoch 70/1000
+Training Loss: 0.89264262, Training R2: 0.284870
+Validation Loss: 1.03524315, Validation R2: 0.122607
+
+Epoch 71/1000
+Training Loss: 0.89009289, Training R2: 0.281531
+Validation Loss: 1.04158485, Validation R2: 0.090983
+
+Epoch 72/1000
+Training Loss: 0.90621950, Training R2: 0.251590
+Validation Loss: 1.03314066, Validation R2: 0.121349
+
+Epoch 73/1000
+Training Loss: 0.89177680, Training R2: 0.287502
+Validation Loss: 1.03372705, Validation R2: 0.129985
+
+Epoch 74/1000
+Training Loss: 0.89181742, Training R2: 0.279295
+Validation Loss: 1.03310311, Validation R2: 0.098774
+
+Epoch 75/1000
+Training Loss: 0.89598737, Training R2: 0.263147
+Validation Loss: 1.02698374, Validation R2: 0.127076
+
+Epoch 76/1000
+Training Loss: 0.88780602, Training R2: 0.287990
+Validation Loss: 1.02493310, Validation R2: 0.128823
+
+Epoch 77/1000
+Training Loss: 0.88668242, Training R2: 0.289632
+Validation Loss: 1.02801204, Validation R2: 0.117245
+
+Epoch 78/1000
+Training Loss: 0.88371552, Training R2: 0.282673
+Validation Loss: 1.03383660, Validation R2: 0.116499
+
+Epoch 79/1000
+Training Loss: 0.88839921, Training R2: 0.275858
+Validation Loss: 1.03760552, Validation R2: 0.123200
+
+Epoch 80/1000
+Training Loss: 0.88938509, Training R2: 0.288599
+Validation Loss: 1.03489792, Validation R2: 0.125598
+
+Epoch 81/1000
+Training Loss: 0.88408764, Training R2: 0.285706
+Validation Loss: 1.03049123, Validation R2: 0.104106
+
+Epoch 82/1000
+Epoch 00082: reducing learning rate of group 0 to 1.2500e-05.
+Training Loss: 0.88869275, Training R2: 0.275593
+Validation Loss: 1.02661562, Validation R2: 0.121432
+
+Epoch 83/1000
+学习率已减少 3 次
+Training Loss: 0.88190495, Training R2: 0.294087
+Validation Loss: 1.02678752, Validation R2: 0.122600
+
+Epoch 84/1000
+Training Loss: 0.88033316, Training R2: 0.295414
+Validation Loss: 1.02663600, Validation R2: 0.116828
+
+Epoch 85/1000
+Training Loss: 0.88348204, Training R2: 0.281533
+Validation Loss: 1.02727211, Validation R2: 0.112432
+
+Epoch 86/1000
+Training Loss: 0.88013950, Training R2: 0.289078
+Validation Loss: 1.02961433, Validation R2: 0.130172
+
+Epoch 87/1000
+Training Loss: 0.88075094, Training R2: 0.301436
+Validation Loss: 1.02883530, Validation R2: 0.129062
+
+Epoch 88/1000
+Training Loss: 0.87823101, Training R2: 0.299672
+Validation Loss: 1.02825713, Validation R2: 0.126513
+
+Epoch 89/1000
+Training Loss: 0.87706988, Training R2: 0.295497
+Validation Loss: 1.02836740, Validation R2: 0.119311
+
+Epoch 90/1000
+Training Loss: 0.87793901, Training R2: 0.289984
+Validation Loss: 1.02821469, Validation R2: 0.118496
+
+Epoch 91/1000
+Training Loss: 0.87652135, Training R2: 0.292756
+Validation Loss: 1.02866256, Validation R2: 0.119009
+
+Epoch 92/1000
+Training Loss: 0.87761842, Training R2: 0.290731
+Validation Loss: 1.02780879, Validation R2: 0.118763
+
+Epoch 93/1000
+Training Loss: 0.87437315, Training R2: 0.298621
+Validation Loss: 1.03411448, Validation R2: 0.125702
+
+Epoch 94/1000
+Training Loss: 0.88194493, Training R2: 0.303547
+Validation Loss: 1.03117251, Validation R2: 0.127520
+
+Epoch 95/1000
+Training Loss: 0.87965303, Training R2: 0.295526
+Validation Loss: 1.02443445, Validation R2: 0.116896
+
+Epoch 96/1000
+Training Loss: 0.88118780, Training R2: 0.289578
+Validation Loss: 1.02397811, Validation R2: 0.134566
+
+Epoch 97/1000
+Training Loss: 0.87961447, Training R2: 0.303839
+Validation Loss: 1.02925861, Validation R2: 0.137791
+
+Epoch 98/1000
+Training Loss: 0.87849470, Training R2: 0.302618
+Validation Loss: 1.02639604, Validation R2: 0.129545
+
+Epoch 99/1000
+Training Loss: 0.87551358, Training R2: 0.298401
+Validation Loss: 1.02747560, Validation R2: 0.130229
+
+Epoch 100/1000
+Training Loss: 0.87356653, Training R2: 0.302059
+Validation Loss: 1.02738690, Validation R2: 0.123588
+
+Epoch 101/1000
+Training Loss: 0.87448195, Training R2: 0.297423
+Validation Loss: 1.02779615, Validation R2: 0.120621
+
+Epoch 102/1000
+Training Loss: 0.87747504, Training R2: 0.298394
+Validation Loss: 1.03099632, Validation R2: 0.120550
+
+Epoch 103/1000
+Epoch 00103: reducing learning rate of group 0 to 6.2500e-06.
+Training Loss: 0.87828824, Training R2: 0.294318
+Validation Loss: 1.02794707, Validation R2: 0.115372
+
+Epoch 104/1000
+学习率已减少 4 次
+Training Loss: 0.87428966, Training R2: 0.294542
+Validation Loss: 1.02712917, Validation R2: 0.126036
+
+Epoch 105/1000
+Training Loss: 0.87202189, Training R2: 0.303593
+Validation Loss: 1.02655494, Validation R2: 0.129568
+
+Epoch 106/1000
+Training Loss: 0.87144382, Training R2: 0.305772
+Validation Loss: 1.02668369, Validation R2: 0.131118
+
+Epoch 107/1000
+Training Loss: 0.87197910, Training R2: 0.307977
+Validation Loss: 1.02784836, Validation R2: 0.131073
+
+Epoch 108/1000
+Training Loss: 0.87120030, Training R2: 0.308156
+Validation Loss: 1.02513778, Validation R2: 0.125108
+
+Epoch 109/1000
+Training Loss: 0.87346874, Training R2: 0.297100
+Validation Loss: 1.02637231, Validation R2: 0.118834
+
+Epoch 110/1000
+Training Loss: 0.87212901, Training R2: 0.296498
+Validation Loss: 1.02764392, Validation R2: 0.124946
+
+Epoch 111/1000
+Training Loss: 0.87119838, Training R2: 0.304747
+Validation Loss: 1.02941740, Validation R2: 0.127432
+
+Epoch 112/1000
+Training Loss: 0.87229860, Training R2: 0.306885
+Validation Loss: 1.02562404, Validation R2: 0.126751
+
+Epoch 113/1000
+Training Loss: 0.87107493, Training R2: 0.303473
+Validation Loss: 1.02387357, Validation R2: 0.121125
+
+Epoch 114/1000
+Training Loss: 0.87198300, Training R2: 0.301232
+Validation Loss: 1.02399457, Validation R2: 0.126455
+
+Epoch 115/1000
+Training Loss: 0.87002394, Training R2: 0.306968
+Validation Loss: 1.02733493, Validation R2: 0.129805
+
+Epoch 116/1000
+Training Loss: 0.87012602, Training R2: 0.309368
+Validation Loss: 1.02605379, Validation R2: 0.129557
+
+Epoch 117/1000
+Training Loss: 0.87053689, Training R2: 0.302148
+Validation Loss: 1.02597010, Validation R2: 0.122667
+
+Epoch 118/1000
+Training Loss: 0.87106064, Training R2: 0.299538
+Validation Loss: 1.02650654, Validation R2: 0.128008
+
+Epoch 119/1000
+Training Loss: 0.86853421, Training R2: 0.307444
+Validation Loss: 1.02891731, Validation R2: 0.131436
+
+Epoch 120/1000
+Training Loss: 0.87163746, Training R2: 0.311243
+Validation Loss: 1.02834558, Validation R2: 0.129722
+
+Epoch 121/1000
+Training Loss: 0.87153275, Training R2: 0.307339
+Validation Loss: 1.02517426, Validation R2: 0.121621
+
+Epoch 122/1000
+Training Loss: 0.87018453, Training R2: 0.301310
+Validation Loss: 1.02613580, Validation R2: 0.117257
+
+Epoch 123/1000
+Training Loss: 0.86984091, Training R2: 0.299908
+Validation Loss: 1.02759874, Validation R2: 0.118570
+
+Epoch 124/1000
+Epoch 00124: reducing learning rate of group 0 to 3.1250e-06.
+Training Loss: 0.86913168, Training R2: 0.300749
+Validation Loss: 1.02748537, Validation R2: 0.119293
+
+Epoch 125/1000
+学习率已减少 5 次
+Training Loss: 0.86816490, Training R2: 0.302466
+Validation Loss: 1.02690935, Validation R2: 0.120603
+
+Epoch 126/1000
+Training Loss: 0.86762448, Training R2: 0.304695
+Validation Loss: 1.02637529, Validation R2: 0.123604
+
+Epoch 127/1000
+Training Loss: 0.86715049, Training R2: 0.307956
+Validation Loss: 1.02669632, Validation R2: 0.125876
+
+Epoch 128/1000
+Training Loss: 0.86748460, Training R2: 0.309741
+Validation Loss: 1.02646863, Validation R2: 0.127300
+
+Epoch 129/1000
+Training Loss: 0.86754479, Training R2: 0.310640
+Validation Loss: 1.02525711, Validation R2: 0.127861
+
+Epoch 130/1000
+Training Loss: 0.86656699, Training R2: 0.309272
+Validation Loss: 1.02456379, Validation R2: 0.125208
+
+Epoch 131/1000
+Training Loss: 0.86777390, Training R2: 0.305795
+Validation Loss: 1.02503693, Validation R2: 0.124220
+
+Epoch 132/1000
+Training Loss: 0.86701582, Training R2: 0.306418
+Validation Loss: 1.02596426, Validation R2: 0.126924
+
+Epoch 133/1000
+Training Loss: 0.86657458, Training R2: 0.309889
+Validation Loss: 1.02868271, Validation R2: 0.127779
+
+Epoch 134/1000
+Training Loss: 0.86926848, Training R2: 0.312715
+Validation Loss: 1.03095806, Validation R2: 0.127816
+
+Epoch 135/1000
+Training Loss: 0.86849133, Training R2: 0.311620
+Validation Loss: 1.02709258, Validation R2: 0.125799
+
+Epoch 136/1000
+Training Loss: 0.86596645, Training R2: 0.309199
+Validation Loss: 1.02534854, Validation R2: 0.122775
+
+Epoch 137/1000
+Training Loss: 0.86763799, Training R2: 0.302832
+Validation Loss: 1.02519631, Validation R2: 0.119787
+
+Epoch 138/1000
+Training Loss: 0.86806548, Training R2: 0.302341
+Validation Loss: 1.02463102, Validation R2: 0.124812
+
+Epoch 139/1000
+Training Loss: 0.86610628, Training R2: 0.307914
+Validation Loss: 1.02639198, Validation R2: 0.128573
+
+Epoch 140/1000
+Training Loss: 0.86684469, Training R2: 0.311418
+Validation Loss: 1.02769244, Validation R2: 0.129393
+
+Epoch 141/1000
+Training Loss: 0.86637589, Training R2: 0.311303
+Validation Loss: 1.02459896, Validation R2: 0.127474
+
+Epoch 142/1000
+Training Loss: 0.86704804, Training R2: 0.306038
+Validation Loss: 1.02437747, Validation R2: 0.124956
+
+Epoch 143/1000
+Training Loss: 0.86590337, Training R2: 0.306243
+Validation Loss: 1.02489054, Validation R2: 0.128160
+
+Epoch 144/1000
+Training Loss: 0.86658426, Training R2: 0.311498
+Validation Loss: 1.02902901, Validation R2: 0.129964
+
+Epoch 145/1000
+Epoch 00145: reducing learning rate of group 0 to 1.5625e-06.
+Training Loss: 0.86693851, Training R2: 0.313818
+Validation Loss: 1.02767670, Validation R2: 0.127986
+
+Epoch 146/1000
+学习率已减少 6 次
+学习率已减少 6 次，达到最大允许次数 5，提前终止训练
+
+Training completed.
+Saved loss curve to /share/home/alpha/block_predict/block_predict/fine-tune/loss_curve_dipole.png
+Saved R2 curve to /share/home/alpha/block_predict/block_predict/fine-tune/r2_curve_dipole.png

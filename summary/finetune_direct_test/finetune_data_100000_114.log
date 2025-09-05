@@ -1,0 +1,296 @@
+Using device: cuda
+Selected target_properties: ['dipole']
+Available target properties: ['rot_A', 'rot_B', 'rot_C', 'dipole', 'polarizability', 'HOMO_energy', 'LUMO_energy', 'gap', 'R2', 'zpve', 'U0', 'U298', 'H298', 'G298', 'Cv']
+Total samples: 100000, Training: 80000, Validation: 20000
+Pretrained ComENetAutoEncoder layers:
+0: feature1 (torsion_emb)
+1: feature2 (angle_emb)
+2: emb_z (EmbeddingBlock)
+3: interaction_blocks.0 (SimpleInteractionBlock)
+4: interaction_blocks.1 (SimpleInteractionBlock)
+5: interaction_blocks.2 (SimpleInteractionBlock)
+6: interaction_blocks.3 (SimpleInteractionBlock)
+7: lins.0 (Linear)
+8: lins.1 (Linear)
+9: lins.2 (Linear)
+10: encoder (Sequential)
+11: transformer_decoders_z.0 (TransformerEncoder)
+12: output_layers_z.0 (Linear)
+冻结层 0: feature1 (torsion_emb)
+冻结层 1: feature2 (angle_emb)
+冻结层 2: emb_z (EmbeddingBlock)
+冻结层 3: interaction_blocks.0 (SimpleInteractionBlock)
+冻结层 4: interaction_blocks.1 (SimpleInteractionBlock)
+
+Frozen layers status:
+emb_z.emb.weight: Frozen
+interaction_blocks.0.conv1.lin_rel.weight: Frozen
+interaction_blocks.0.conv1.lin_rel.bias: Frozen
+interaction_blocks.0.conv1.lin_root.weight: Frozen
+interaction_blocks.0.conv2.lin_rel.weight: Frozen
+interaction_blocks.0.conv2.lin_rel.bias: Frozen
+interaction_blocks.0.conv2.lin_root.weight: Frozen
+interaction_blocks.0.lin1.weight: Frozen
+interaction_blocks.0.lin1.bias: Frozen
+interaction_blocks.0.lin2.weight: Frozen
+interaction_blocks.0.lin2.bias: Frozen
+interaction_blocks.0.lin_cat.weight: Frozen
+interaction_blocks.0.lin_cat.bias: Frozen
+interaction_blocks.0.norm.weight: Frozen
+interaction_blocks.0.norm.bias: Frozen
+interaction_blocks.0.norm.mean_scale: Frozen
+interaction_blocks.0.lin_feature1.lin1.weight: Frozen
+interaction_blocks.0.lin_feature1.lin2.weight: Frozen
+interaction_blocks.0.lin_feature2.lin1.weight: Frozen
+interaction_blocks.0.lin_feature2.lin2.weight: Frozen
+interaction_blocks.0.lin.weight: Frozen
+interaction_blocks.0.lin.bias: Frozen
+interaction_blocks.0.lins.0.weight: Frozen
+interaction_blocks.0.lins.0.bias: Frozen
+interaction_blocks.0.lins.1.weight: Frozen
+interaction_blocks.0.lins.1.bias: Frozen
+interaction_blocks.0.lins.2.weight: Frozen
+interaction_blocks.0.lins.2.bias: Frozen
+interaction_blocks.0.lins.3.weight: Frozen
+interaction_blocks.0.lins.3.bias: Frozen
+interaction_blocks.0.final.weight: Frozen
+interaction_blocks.0.final.bias: Frozen
+interaction_blocks.1.conv1.lin_rel.weight: Frozen
+interaction_blocks.1.conv1.lin_rel.bias: Frozen
+interaction_blocks.1.conv1.lin_root.weight: Frozen
+interaction_blocks.1.conv2.lin_rel.weight: Frozen
+interaction_blocks.1.conv2.lin_rel.bias: Frozen
+interaction_blocks.1.conv2.lin_root.weight: Frozen
+interaction_blocks.1.lin1.weight: Frozen
+interaction_blocks.1.lin1.bias: Frozen
+interaction_blocks.1.lin2.weight: Frozen
+interaction_blocks.1.lin2.bias: Frozen
+interaction_blocks.1.lin_cat.weight: Frozen
+interaction_blocks.1.lin_cat.bias: Frozen
+interaction_blocks.1.norm.weight: Frozen
+interaction_blocks.1.norm.bias: Frozen
+interaction_blocks.1.norm.mean_scale: Frozen
+interaction_blocks.1.lin_feature1.lin1.weight: Frozen
+interaction_blocks.1.lin_feature1.lin2.weight: Frozen
+interaction_blocks.1.lin_feature2.lin1.weight: Frozen
+interaction_blocks.1.lin_feature2.lin2.weight: Frozen
+interaction_blocks.1.lin.weight: Frozen
+interaction_blocks.1.lin.bias: Frozen
+interaction_blocks.1.lins.0.weight: Frozen
+interaction_blocks.1.lins.0.bias: Frozen
+interaction_blocks.1.lins.1.weight: Frozen
+interaction_blocks.1.lins.1.bias: Frozen
+interaction_blocks.1.lins.2.weight: Frozen
+interaction_blocks.1.lins.2.bias: Frozen
+interaction_blocks.1.lins.3.weight: Frozen
+interaction_blocks.1.lins.3.bias: Frozen
+interaction_blocks.1.final.weight: Frozen
+interaction_blocks.1.final.bias: Frozen
+interaction_blocks.2.conv1.lin_rel.weight: Trainable
+interaction_blocks.2.conv1.lin_rel.bias: Trainable
+interaction_blocks.2.conv1.lin_root.weight: Trainable
+interaction_blocks.2.conv2.lin_rel.weight: Trainable
+interaction_blocks.2.conv2.lin_rel.bias: Trainable
+interaction_blocks.2.conv2.lin_root.weight: Trainable
+interaction_blocks.2.lin1.weight: Trainable
+interaction_blocks.2.lin1.bias: Trainable
+interaction_blocks.2.lin2.weight: Trainable
+interaction_blocks.2.lin2.bias: Trainable
+interaction_blocks.2.lin_cat.weight: Trainable
+interaction_blocks.2.lin_cat.bias: Trainable
+interaction_blocks.2.norm.weight: Trainable
+interaction_blocks.2.norm.bias: Trainable
+interaction_blocks.2.norm.mean_scale: Trainable
+interaction_blocks.2.lin_feature1.lin1.weight: Trainable
+interaction_blocks.2.lin_feature1.lin2.weight: Trainable
+interaction_blocks.2.lin_feature2.lin1.weight: Trainable
+interaction_blocks.2.lin_feature2.lin2.weight: Trainable
+interaction_blocks.2.lin.weight: Trainable
+interaction_blocks.2.lin.bias: Trainable
+interaction_blocks.2.lins.0.weight: Trainable
+interaction_blocks.2.lins.0.bias: Trainable
+interaction_blocks.2.lins.1.weight: Trainable
+interaction_blocks.2.lins.1.bias: Trainable
+interaction_blocks.2.lins.2.weight: Trainable
+interaction_blocks.2.lins.2.bias: Trainable
+interaction_blocks.2.lins.3.weight: Trainable
+interaction_blocks.2.lins.3.bias: Trainable
+interaction_blocks.2.final.weight: Trainable
+interaction_blocks.2.final.bias: Trainable
+interaction_blocks.3.conv1.lin_rel.weight: Trainable
+interaction_blocks.3.conv1.lin_rel.bias: Trainable
+interaction_blocks.3.conv1.lin_root.weight: Trainable
+interaction_blocks.3.conv2.lin_rel.weight: Trainable
+interaction_blocks.3.conv2.lin_rel.bias: Trainable
+interaction_blocks.3.conv2.lin_root.weight: Trainable
+interaction_blocks.3.lin1.weight: Trainable
+interaction_blocks.3.lin1.bias: Trainable
+interaction_blocks.3.lin2.weight: Trainable
+interaction_blocks.3.lin2.bias: Trainable
+interaction_blocks.3.lin_cat.weight: Trainable
+interaction_blocks.3.lin_cat.bias: Trainable
+interaction_blocks.3.norm.weight: Trainable
+interaction_blocks.3.norm.bias: Trainable
+interaction_blocks.3.norm.mean_scale: Trainable
+interaction_blocks.3.lin_feature1.lin1.weight: Trainable
+interaction_blocks.3.lin_feature1.lin2.weight: Trainable
+interaction_blocks.3.lin_feature2.lin1.weight: Trainable
+interaction_blocks.3.lin_feature2.lin2.weight: Trainable
+interaction_blocks.3.lin.weight: Trainable
+interaction_blocks.3.lin.bias: Trainable
+interaction_blocks.3.lins.0.weight: Trainable
+interaction_blocks.3.lins.0.bias: Trainable
+interaction_blocks.3.lins.1.weight: Trainable
+interaction_blocks.3.lins.1.bias: Trainable
+interaction_blocks.3.lins.2.weight: Trainable
+interaction_blocks.3.lins.2.bias: Trainable
+interaction_blocks.3.lins.3.weight: Trainable
+interaction_blocks.3.lins.3.bias: Trainable
+interaction_blocks.3.final.weight: Trainable
+interaction_blocks.3.final.bias: Trainable
+lins.0.weight: Trainable
+lins.0.bias: Trainable
+lins.1.weight: Trainable
+lins.1.bias: Trainable
+lins.2.weight: Trainable
+lins.2.bias: Trainable
+encoder.0.weight: Trainable
+encoder.0.bias: Trainable
+transformer_decoders_z.0.layers.0.self_attn.in_proj_weight: Trainable
+transformer_decoders_z.0.layers.0.self_attn.in_proj_bias: Trainable
+transformer_decoders_z.0.layers.0.self_attn.out_proj.weight: Trainable
+transformer_decoders_z.0.layers.0.self_attn.out_proj.bias: Trainable
+transformer_decoders_z.0.layers.0.linear1.weight: Trainable
+transformer_decoders_z.0.layers.0.linear1.bias: Trainable
+transformer_decoders_z.0.layers.0.linear2.weight: Trainable
+transformer_decoders_z.0.layers.0.linear2.bias: Trainable
+transformer_decoders_z.0.layers.0.norm1.weight: Trainable
+transformer_decoders_z.0.layers.0.norm1.bias: Trainable
+transformer_decoders_z.0.layers.0.norm2.weight: Trainable
+transformer_decoders_z.0.layers.0.norm2.bias: Trainable
+output_layers_z.0.weight: Trainable
+output_layers_z.0.bias: Trainable
+模型的总可训练参数量: 3451011
+
+Epoch 1/200
+Training Loss: 0.74243724, Training R2: 0.481335
+Validation Loss: 0.46551778, Validation R2: 0.777946
+Saved best model with validation R2 0.777946 to dipole100000_finetune_best.pth
+
+Epoch 2/200
+Training Loss: 0.39736373, Training R2: 0.830329
+Validation Loss: 0.33648767, Validation R2: 0.873311
+Saved best model with validation R2 0.873311 to dipole100000_finetune_best.pth
+
+Epoch 3/200
+Training Loss: 0.30054993, Training R2: 0.902367
+Validation Loss: 0.29312301, Validation R2: 0.914968
+Saved best model with validation R2 0.914968 to dipole100000_finetune_best.pth
+
+Epoch 4/200
+Training Loss: 0.25601887, Training R2: 0.929298
+Validation Loss: 0.27078511, Validation R2: 0.924742
+Saved best model with validation R2 0.924742 to dipole100000_finetune_best.pth
+
+Epoch 5/200
+Training Loss: 0.22262839, Training R2: 0.943173
+Validation Loss: 0.25656358, Validation R2: 0.932719
+Saved best model with validation R2 0.932719 to dipole100000_finetune_best.pth
+
+Epoch 6/200
+Training Loss: 0.20057825, Training R2: 0.953250
+Validation Loss: 0.22178729, Validation R2: 0.945208
+Saved best model with validation R2 0.945208 to dipole100000_finetune_best.pth
+
+Epoch 7/200
+Training Loss: 0.18486581, Training R2: 0.959536
+Validation Loss: 0.20921654, Validation R2: 0.948781
+Saved best model with validation R2 0.948781 to dipole100000_finetune_best.pth
+
+Epoch 8/200
+Training Loss: 0.17343353, Training R2: 0.964041
+Validation Loss: 0.21221958, Validation R2: 0.947871
+
+Epoch 9/200
+Training Loss: 0.15941045, Training R2: 0.967988
+Validation Loss: 0.20589778, Validation R2: 0.953335
+Saved best model with validation R2 0.953335 to dipole100000_finetune_best.pth
+
+Epoch 10/200
+Training Loss: 0.15405397, Training R2: 0.971234
+Validation Loss: 0.20437475, Validation R2: 0.952774
+
+Epoch 11/200
+Training Loss: 0.14883255, Training R2: 0.973071
+Validation Loss: 0.21254042, Validation R2: 0.953018
+
+Epoch 12/200
+Training Loss: 0.13552224, Training R2: 0.976851
+Validation Loss: 0.18073820, Validation R2: 0.962220
+Saved best model with validation R2 0.962220 to dipole100000_finetune_best.pth
+
+Epoch 13/200
+Training Loss: 0.13550512, Training R2: 0.977225
+Validation Loss: 0.21173513, Validation R2: 0.954179
+
+Epoch 14/200
+Training Loss: 0.13213222, Training R2: 0.978623
+Validation Loss: 0.16895155, Validation R2: 0.965051
+Saved best model with validation R2 0.965051 to dipole100000_finetune_best.pth
+
+Epoch 15/200
+Training Loss: 0.11968802, Training R2: 0.982164
+Validation Loss: 0.17464717, Validation R2: 0.963424
+
+Epoch 16/200
+Training Loss: 0.11588823, Training R2: 0.983158
+Validation Loss: 0.17169989, Validation R2: 0.965127
+Saved best model with validation R2 0.965127 to dipole100000_finetune_best.pth
+
+Epoch 17/200
+Training Loss: 0.11848031, Training R2: 0.983185
+Validation Loss: 0.17077060, Validation R2: 0.966376
+Saved best model with validation R2 0.966376 to dipole100000_finetune_best.pth
+
+Epoch 18/200
+Training Loss: 0.10913374, Training R2: 0.985414
+Validation Loss: 0.17429143, Validation R2: 0.966200
+
+Epoch 19/200
+Training Loss: 0.10478683, Training R2: 0.986439
+Validation Loss: 0.16181729, Validation R2: 0.968621
+Saved best model with validation R2 0.968621 to dipole100000_finetune_best.pth
+
+Epoch 20/200
+Training Loss: 0.10699641, Training R2: 0.986779
+Validation Loss: 0.16223099, Validation R2: 0.968584
+
+Epoch 21/200
+Training Loss: 0.09933933, Training R2: 0.988175
+Validation Loss: 0.17096502, Validation R2: 0.966522
+
+Epoch 22/200
+Training Loss: 0.09772758, Training R2: 0.988702
+Validation Loss: 0.15768079, Validation R2: 0.970560
+Saved best model with validation R2 0.970560 to dipole100000_finetune_best.pth
+
+Epoch 23/200
+Training Loss: 0.09726992, Training R2: 0.989301
+Validation Loss: 0.17911601, Validation R2: 0.966630
+
+Epoch 24/200
+Training Loss: 0.09150779, Training R2: 0.990152
+Validation Loss: 0.15351374, Validation R2: 0.971350
+Saved best model with validation R2 0.971350 to dipole100000_finetune_best.pth
+
+Epoch 25/200
+Training Loss: 0.08996009, Training R2: 0.990602
+Validation Loss: 0.15285247, Validation R2: 0.971519
+Saved best model with validation R2 0.971519 to dipole100000_finetune_best.pth
+
+Epoch 26/200
+Training Loss: 0.08709562, Training R2: 0.991239
+Validation Loss: 0.15139227, Validation R2: 0.972314
+Saved best model with validation R2 0.972314 to dipole100000_finetune_best.pth
+
+Epoch 27/200

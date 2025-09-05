@@ -1,0 +1,433 @@
+Using device: cuda
+Total samples: 5000, Training: 4000, Validation: 1000
+Total trainable parameters: 1477889
+Epoch 1/200
+Train Loss: 2.89732802, Train R²: -0.297834, Val Loss: 2.14214558, Val R²: 0.087812
+Saved best model with validation R2 0.087812 to best_finetuned_model.pth
+Epoch 2/200
+Train Loss: 1.80464427, Train R²: 0.191625, Val Loss: 1.88527631, Val R²: 0.197194
+Saved best model with validation R2 0.197194 to best_finetuned_model.pth
+Epoch 3/200
+Train Loss: 1.44188596, Train R²: 0.354119, Val Loss: 1.47640527, Val R²: 0.371303
+Saved best model with validation R2 0.371303 to best_finetuned_model.pth
+Epoch 4/200
+Train Loss: 1.10603250, Train R²: 0.504562, Val Loss: 1.27269290, Val R²: 0.458050
+Saved best model with validation R2 0.458050 to best_finetuned_model.pth
+Epoch 5/200
+Train Loss: 0.73686384, Train R²: 0.669928, Val Loss: 1.15995139, Val R²: 0.506059
+Saved best model with validation R2 0.506059 to best_finetuned_model.pth
+Epoch 6/200
+Train Loss: 0.54140288, Train R²: 0.757483, Val Loss: 1.08928849, Val R²: 0.536149
+Saved best model with validation R2 0.536149 to best_finetuned_model.pth
+Epoch 7/200
+Train Loss: 0.43201987, Train R²: 0.806480, Val Loss: 0.97459566, Val R²: 0.584989
+Saved best model with validation R2 0.584989 to best_finetuned_model.pth
+Epoch 8/200
+Train Loss: 0.29243938, Train R²: 0.869004, Val Loss: 0.95301276, Val R²: 0.594179
+Saved best model with validation R2 0.594179 to best_finetuned_model.pth
+Epoch 9/200
+Train Loss: 0.20163505, Train R²: 0.909679, Val Loss: 0.94886096, Val R²: 0.595947
+Saved best model with validation R2 0.595947 to best_finetuned_model.pth
+Epoch 10/200
+Train Loss: 0.15254656, Train R²: 0.931668, Val Loss: 0.90245506, Val R²: 0.615708
+Saved best model with validation R2 0.615708 to best_finetuned_model.pth
+Epoch 11/200
+Train Loss: 0.10544103, Train R²: 0.952769, Val Loss: 0.87559758, Val R²: 0.627145
+Saved best model with validation R2 0.627145 to best_finetuned_model.pth
+Epoch 12/200
+Train Loss: 0.07359348, Train R²: 0.967034, Val Loss: 0.84427553, Val R²: 0.640483
+Saved best model with validation R2 0.640483 to best_finetuned_model.pth
+Epoch 13/200
+Train Loss: 0.05640070, Train R²: 0.974736, Val Loss: 0.90433166, Val R²: 0.614909
+Epoch 14/200
+Train Loss: 0.04682468, Train R²: 0.979025, Val Loss: 0.90482583, Val R²: 0.614699
+Epoch 15/200
+Train Loss: 0.03902080, Train R²: 0.982521, Val Loss: 0.87997446, Val R²: 0.625281
+Epoch 16/200
+Train Loss: 0.03401383, Train R²: 0.984764, Val Loss: 0.86139189, Val R²: 0.633194
+Epoch 17/200
+Train Loss: 0.03465827, Train R²: 0.984475, Val Loss: 0.89414573, Val R²: 0.619247
+Epoch 18/200
+Train Loss: 0.02931749, Train R²: 0.986867, Val Loss: 0.87824629, Val R²: 0.626017
+Epoch 19/200
+Train Loss: 0.02563502, Train R²: 0.988517, Val Loss: 0.87757854, Val R²: 0.626301
+Epoch 20/200
+Train Loss: 0.02310035, Train R²: 0.989652, Val Loss: 0.87875733, Val R²: 0.625799
+Epoch 21/200
+Train Loss: 0.01962796, Train R²: 0.991208, Val Loss: 0.86876029, Val R²: 0.630056
+Epoch 22/200
+Train Loss: 0.01718570, Train R²: 0.992302, Val Loss: 0.86468344, Val R²: 0.631792
+Epoch 23/200
+Train Loss: 0.01445592, Train R²: 0.993525, Val Loss: 0.86095960, Val R²: 0.633378
+Epoch 00023: reducing learning rate of group 0 to 5.0000e-04.
+Epoch 24/200
+Train Loss: 0.00989599, Train R²: 0.995567, Val Loss: 0.85458928, Val R²: 0.636091
+Epoch 25/200
+Train Loss: 0.00555294, Train R²: 0.997513, Val Loss: 0.85499946, Val R²: 0.635916
+Epoch 26/200
+Train Loss: 0.00264443, Train R²: 0.998815, Val Loss: 0.85589215, Val R²: 0.635536
+Epoch 27/200
+Train Loss: 0.00137878, Train R²: 0.999382, Val Loss: 0.85355274, Val R²: 0.636532
+Epoch 28/200
+Train Loss: 0.00110282, Train R²: 0.999506, Val Loss: 0.85757979, Val R²: 0.634817
+Epoch 29/200
+Train Loss: 0.00069719, Train R²: 0.999688, Val Loss: 0.85459118, Val R²: 0.636090
+Epoch 30/200
+Train Loss: 0.00075213, Train R²: 0.999663, Val Loss: 0.85582734, Val R²: 0.635564
+Epoch 31/200
+Train Loss: 0.00046752, Train R²: 0.999791, Val Loss: 0.85663663, Val R²: 0.635219
+Epoch 32/200
+Train Loss: 0.00032270, Train R²: 0.999855, Val Loss: 0.85653771, Val R²: 0.635261
+Epoch 33/200
+Train Loss: 0.00024858, Train R²: 0.999889, Val Loss: 0.85769353, Val R²: 0.634769
+Epoch 34/200
+Train Loss: 0.00021956, Train R²: 0.999902, Val Loss: 0.85671341, Val R²: 0.635186
+Epoch 00034: reducing learning rate of group 0 to 2.5000e-04.
+Epoch 35/200
+Train Loss: 0.00020027, Train R²: 0.999910, Val Loss: 0.85685688, Val R²: 0.635125
+Epoch 36/200
+Train Loss: 0.00012148, Train R²: 0.999946, Val Loss: 0.85764297, Val R²: 0.634790
+Epoch 37/200
+Train Loss: 0.00034688, Train R²: 0.999845, Val Loss: 0.85705910, Val R²: 0.635039
+Epoch 38/200
+Train Loss: 0.00022833, Train R²: 0.999898, Val Loss: 0.85817838, Val R²: 0.634562
+Epoch 39/200
+Train Loss: 0.00012718, Train R²: 0.999943, Val Loss: 0.85680726, Val R²: 0.635146
+Epoch 40/200
+Train Loss: 0.00008669, Train R²: 0.999961, Val Loss: 0.85717060, Val R²: 0.634992
+Epoch 41/200
+Train Loss: 0.00011709, Train R²: 0.999948, Val Loss: 0.85742758, Val R²: 0.634882
+Epoch 42/200
+Train Loss: 0.00009075, Train R²: 0.999959, Val Loss: 0.85736173, Val R²: 0.634910
+Epoch 43/200
+Train Loss: 0.00007891, Train R²: 0.999965, Val Loss: 0.85791201, Val R²: 0.634676
+Epoch 44/200
+Train Loss: 0.00007657, Train R²: 0.999966, Val Loss: 0.85812781, Val R²: 0.634584
+Epoch 45/200
+Train Loss: 0.00008016, Train R²: 0.999964, Val Loss: 0.85786198, Val R²: 0.634697
+Epoch 00045: reducing learning rate of group 0 to 1.2500e-04.
+Epoch 46/200
+Train Loss: 0.00013847, Train R²: 0.999938, Val Loss: 0.85754421, Val R²: 0.634833
+Epoch 47/200
+Train Loss: 0.00010229, Train R²: 0.999954, Val Loss: 0.85731914, Val R²: 0.634928
+Epoch 48/200
+Train Loss: 0.00010786, Train R²: 0.999952, Val Loss: 0.85751380, Val R²: 0.634845
+Epoch 49/200
+Train Loss: 0.00004752, Train R²: 0.999979, Val Loss: 0.85798477, Val R²: 0.634645
+Epoch 50/200
+Train Loss: 0.00004611, Train R²: 0.999979, Val Loss: 0.85794117, Val R²: 0.634663
+Epoch 51/200
+Train Loss: 0.00014322, Train R²: 0.999936, Val Loss: 0.85809245, Val R²: 0.634599
+Epoch 52/200
+Train Loss: 0.00005802, Train R²: 0.999974, Val Loss: 0.85752314, Val R²: 0.634841
+Epoch 53/200
+Train Loss: 0.00005433, Train R²: 0.999976, Val Loss: 0.85814143, Val R²: 0.634578
+Epoch 54/200
+Train Loss: 0.00006968, Train R²: 0.999969, Val Loss: 0.85776565, Val R²: 0.634738
+Epoch 55/200
+Train Loss: 0.00009665, Train R²: 0.999957, Val Loss: 0.85761008, Val R²: 0.634804
+Epoch 56/200
+Train Loss: 0.00010874, Train R²: 0.999951, Val Loss: 0.85768057, Val R²: 0.634774
+Epoch 00056: reducing learning rate of group 0 to 6.2500e-05.
+Epoch 57/200
+Train Loss: 0.00006534, Train R²: 0.999971, Val Loss: 0.85763013, Val R²: 0.634796
+Epoch 58/200
+Train Loss: 0.00007043, Train R²: 0.999968, Val Loss: 0.85790336, Val R²: 0.634680
+Epoch 59/200
+Train Loss: 0.00005244, Train R²: 0.999977, Val Loss: 0.85782073, Val R²: 0.634715
+Epoch 60/200
+Train Loss: 0.00003663, Train R²: 0.999984, Val Loss: 0.85767558, Val R²: 0.634777
+Epoch 61/200
+Train Loss: 0.00004125, Train R²: 0.999982, Val Loss: 0.85812124, Val R²: 0.634587
+Epoch 62/200
+Train Loss: 0.00004552, Train R²: 0.999980, Val Loss: 0.85812783, Val R²: 0.634584
+Epoch 63/200
+Train Loss: 0.00003929, Train R²: 0.999982, Val Loss: 0.85806191, Val R²: 0.634612
+Epoch 64/200
+Train Loss: 0.00008540, Train R²: 0.999962, Val Loss: 0.85801327, Val R²: 0.634633
+Epoch 65/200
+Train Loss: 0.00002898, Train R²: 0.999987, Val Loss: 0.85804732, Val R²: 0.634618
+Epoch 66/200
+Train Loss: 0.00002811, Train R²: 0.999987, Val Loss: 0.85794128, Val R²: 0.634663
+Epoch 67/200
+Train Loss: 0.00008423, Train R²: 0.999962, Val Loss: 0.85805740, Val R²: 0.634614
+Epoch 00067: reducing learning rate of group 0 to 3.1250e-05.
+Epoch 68/200
+Train Loss: 0.00003351, Train R²: 0.999985, Val Loss: 0.85822110, Val R²: 0.634544
+Epoch 69/200
+Train Loss: 0.00003682, Train R²: 0.999984, Val Loss: 0.85798864, Val R²: 0.634643
+Epoch 70/200
+Train Loss: 0.00008232, Train R²: 0.999963, Val Loss: 0.85797131, Val R²: 0.634651
+Epoch 71/200
+Train Loss: 0.00002417, Train R²: 0.999989, Val Loss: 0.85798234, Val R²: 0.634646
+Epoch 72/200
+Train Loss: 0.00007803, Train R²: 0.999965, Val Loss: 0.85819397, Val R²: 0.634556
+Epoch 73/200
+Train Loss: 0.00005703, Train R²: 0.999974, Val Loss: 0.85796951, Val R²: 0.634651
+Epoch 74/200
+Train Loss: 0.00003621, Train R²: 0.999984, Val Loss: 0.85798793, Val R²: 0.634644
+Epoch 75/200
+Train Loss: 0.00005820, Train R²: 0.999974, Val Loss: 0.85775985, Val R²: 0.634741
+Epoch 76/200
+Train Loss: 0.00006108, Train R²: 0.999973, Val Loss: 0.85800938, Val R²: 0.634634
+Epoch 77/200
+Train Loss: 0.00004123, Train R²: 0.999982, Val Loss: 0.85810923, Val R²: 0.634592
+Epoch 78/200
+Train Loss: 0.00002017, Train R²: 0.999991, Val Loss: 0.85805426, Val R²: 0.634615
+Epoch 00078: reducing learning rate of group 0 to 1.5625e-05.
+Epoch 79/200
+Train Loss: 0.00002239, Train R²: 0.999990, Val Loss: 0.85822351, Val R²: 0.634543
+Epoch 80/200
+Train Loss: 0.00008550, Train R²: 0.999962, Val Loss: 0.85813054, Val R²: 0.634583
+Epoch 81/200
+Train Loss: 0.00005003, Train R²: 0.999978, Val Loss: 0.85811768, Val R²: 0.634588
+Epoch 82/200
+Train Loss: 0.00002963, Train R²: 0.999987, Val Loss: 0.85818867, Val R²: 0.634558
+Epoch 83/200
+Train Loss: 0.00004029, Train R²: 0.999982, Val Loss: 0.85799083, Val R²: 0.634642
+Epoch 84/200
+Train Loss: 0.00004921, Train R²: 0.999978, Val Loss: 0.85805242, Val R²: 0.634616
+Epoch 85/200
+Train Loss: 0.00004118, Train R²: 0.999982, Val Loss: 0.85796956, Val R²: 0.634651
+Epoch 86/200
+Train Loss: 0.00002982, Train R²: 0.999987, Val Loss: 0.85811470, Val R²: 0.634590
+Epoch 87/200
+Train Loss: 0.00007239, Train R²: 0.999968, Val Loss: 0.85825643, Val R²: 0.634529
+Epoch 88/200
+Train Loss: 0.00004648, Train R²: 0.999979, Val Loss: 0.85820461, Val R²: 0.634551
+Epoch 89/200
+Train Loss: 0.00006255, Train R²: 0.999972, Val Loss: 0.85781772, Val R²: 0.634716
+Epoch 00089: reducing learning rate of group 0 to 7.8125e-06.
+Epoch 90/200
+Train Loss: 0.00005747, Train R²: 0.999974, Val Loss: 0.85806094, Val R²: 0.634612
+Epoch 91/200
+Train Loss: 0.00004682, Train R²: 0.999979, Val Loss: 0.85816411, Val R²: 0.634569
+Epoch 92/200
+Train Loss: 0.00004856, Train R²: 0.999978, Val Loss: 0.85814071, Val R²: 0.634579
+Epoch 93/200
+Train Loss: 0.00003821, Train R²: 0.999983, Val Loss: 0.85817945, Val R²: 0.634562
+Epoch 94/200
+Train Loss: 0.00003512, Train R²: 0.999984, Val Loss: 0.85803532, Val R²: 0.634623
+Epoch 95/200
+Train Loss: 0.00004389, Train R²: 0.999980, Val Loss: 0.85804812, Val R²: 0.634618
+Epoch 96/200
+Train Loss: 0.00003399, Train R²: 0.999985, Val Loss: 0.85802709, Val R²: 0.634627
+Epoch 97/200
+Train Loss: 0.00005904, Train R²: 0.999974, Val Loss: 0.85795262, Val R²: 0.634659
+Epoch 98/200
+Train Loss: 0.00004264, Train R²: 0.999981, Val Loss: 0.85803960, Val R²: 0.634622
+Epoch 99/200
+Train Loss: 0.00002889, Train R²: 0.999987, Val Loss: 0.85795154, Val R²: 0.634659
+Epoch 100/200
+Train Loss: 0.00003290, Train R²: 0.999985, Val Loss: 0.85810832, Val R²: 0.634592
+Epoch 00100: reducing learning rate of group 0 to 3.9063e-06.
+Epoch 101/200
+Train Loss: 0.00006206, Train R²: 0.999972, Val Loss: 0.85797621, Val R²: 0.634649
+Epoch 102/200
+Train Loss: 0.00004232, Train R²: 0.999981, Val Loss: 0.85793368, Val R²: 0.634667
+Epoch 103/200
+Train Loss: 0.00003395, Train R²: 0.999985, Val Loss: 0.85795872, Val R²: 0.634656
+Epoch 104/200
+Train Loss: 0.00005848, Train R²: 0.999974, Val Loss: 0.85799227, Val R²: 0.634642
+Epoch 105/200
+Train Loss: 0.00006431, Train R²: 0.999971, Val Loss: 0.85804508, Val R²: 0.634619
+Epoch 106/200
+Train Loss: 0.00003717, Train R²: 0.999983, Val Loss: 0.85816172, Val R²: 0.634570
+Epoch 107/200
+Train Loss: 0.00005537, Train R²: 0.999975, Val Loss: 0.85804437, Val R²: 0.634620
+Epoch 108/200
+Train Loss: 0.00004062, Train R²: 0.999982, Val Loss: 0.85812219, Val R²: 0.634586
+Epoch 109/200
+Train Loss: 0.00004034, Train R²: 0.999982, Val Loss: 0.85792193, Val R²: 0.634672
+Epoch 110/200
+Train Loss: 0.00006813, Train R²: 0.999969, Val Loss: 0.85801540, Val R²: 0.634632
+Epoch 111/200
+Train Loss: 0.00004895, Train R²: 0.999978, Val Loss: 0.85802569, Val R²: 0.634627
+Epoch 00111: reducing learning rate of group 0 to 1.9531e-06.
+Epoch 112/200
+Train Loss: 0.00003141, Train R²: 0.999986, Val Loss: 0.85809078, Val R²: 0.634600
+Epoch 113/200
+Train Loss: 0.00005002, Train R²: 0.999978, Val Loss: 0.85809619, Val R²: 0.634597
+Epoch 114/200
+Train Loss: 0.00002945, Train R²: 0.999987, Val Loss: 0.85798400, Val R²: 0.634645
+Epoch 115/200
+Train Loss: 0.00002967, Train R²: 0.999987, Val Loss: 0.85822094, Val R²: 0.634544
+Epoch 116/200
+Train Loss: 0.00005657, Train R²: 0.999975, Val Loss: 0.85792530, Val R²: 0.634670
+Epoch 117/200
+Train Loss: 0.00009110, Train R²: 0.999959, Val Loss: 0.85799604, Val R²: 0.634640
+Epoch 118/200
+Train Loss: 0.00008221, Train R²: 0.999963, Val Loss: 0.85787696, Val R²: 0.634691
+Epoch 119/200
+Train Loss: 0.00004616, Train R²: 0.999979, Val Loss: 0.85820551, Val R²: 0.634551
+Epoch 120/200
+Train Loss: 0.00005258, Train R²: 0.999976, Val Loss: 0.85823084, Val R²: 0.634540
+Epoch 121/200
+Train Loss: 0.00002824, Train R²: 0.999987, Val Loss: 0.85790252, Val R²: 0.634680
+Epoch 122/200
+Train Loss: 0.00007755, Train R²: 0.999965, Val Loss: 0.85804238, Val R²: 0.634620
+Epoch 00122: reducing learning rate of group 0 to 9.7656e-07.
+Epoch 123/200
+Train Loss: 0.00003045, Train R²: 0.999986, Val Loss: 0.85813817, Val R²: 0.634580
+Epoch 124/200
+Train Loss: 0.00004482, Train R²: 0.999980, Val Loss: 0.85817264, Val R²: 0.634565
+Epoch 125/200
+Train Loss: 0.00004382, Train R²: 0.999980, Val Loss: 0.85834579, Val R²: 0.634491
+Epoch 126/200
+Train Loss: 0.00005561, Train R²: 0.999975, Val Loss: 0.85798765, Val R²: 0.634644
+Epoch 127/200
+Train Loss: 0.00005995, Train R²: 0.999973, Val Loss: 0.85782965, Val R²: 0.634711
+Epoch 128/200
+Train Loss: 0.00007527, Train R²: 0.999966, Val Loss: 0.85807738, Val R²: 0.634605
+Epoch 129/200
+Train Loss: 0.00004542, Train R²: 0.999980, Val Loss: 0.85819122, Val R²: 0.634557
+Epoch 130/200
+Train Loss: 0.00006921, Train R²: 0.999969, Val Loss: 0.85800559, Val R²: 0.634636
+Epoch 131/200
+Train Loss: 0.00003981, Train R²: 0.999982, Val Loss: 0.85798801, Val R²: 0.634644
+Epoch 132/200
+Train Loss: 0.00003397, Train R²: 0.999985, Val Loss: 0.85805097, Val R²: 0.634617
+Epoch 133/200
+Train Loss: 0.00004419, Train R²: 0.999980, Val Loss: 0.85809185, Val R²: 0.634599
+Epoch 00133: reducing learning rate of group 0 to 4.8828e-07.
+Epoch 134/200
+Train Loss: 0.00004577, Train R²: 0.999979, Val Loss: 0.85813273, Val R²: 0.634582
+Epoch 135/200
+Train Loss: 0.00003113, Train R²: 0.999986, Val Loss: 0.85801571, Val R²: 0.634632
+Epoch 136/200
+Train Loss: 0.00006897, Train R²: 0.999969, Val Loss: 0.85810434, Val R²: 0.634594
+Epoch 137/200
+Train Loss: 0.00005498, Train R²: 0.999975, Val Loss: 0.85810173, Val R²: 0.634595
+Epoch 138/200
+Train Loss: 0.00003934, Train R²: 0.999982, Val Loss: 0.85801260, Val R²: 0.634633
+Epoch 139/200
+Train Loss: 0.00006871, Train R²: 0.999969, Val Loss: 0.85816234, Val R²: 0.634569
+Epoch 140/200
+Train Loss: 0.00003625, Train R²: 0.999984, Val Loss: 0.85811508, Val R²: 0.634589
+Epoch 141/200
+Train Loss: 0.00006280, Train R²: 0.999972, Val Loss: 0.85804628, Val R²: 0.634619
+Epoch 142/200
+Train Loss: 0.00002704, Train R²: 0.999988, Val Loss: 0.85813499, Val R²: 0.634581
+Epoch 143/200
+Train Loss: 0.00005546, Train R²: 0.999975, Val Loss: 0.85820238, Val R²: 0.634552
+Epoch 144/200
+Train Loss: 0.00003807, Train R²: 0.999983, Val Loss: 0.85805419, Val R²: 0.634615
+Epoch 00144: reducing learning rate of group 0 to 2.4414e-07.
+Epoch 145/200
+Train Loss: 0.00010675, Train R²: 0.999952, Val Loss: 0.85793780, Val R²: 0.634665
+Epoch 146/200
+Train Loss: 0.00002840, Train R²: 0.999987, Val Loss: 0.85793859, Val R²: 0.634665
+Epoch 147/200
+Train Loss: 0.00004414, Train R²: 0.999980, Val Loss: 0.85819470, Val R²: 0.634556
+Epoch 148/200
+Train Loss: 0.00005659, Train R²: 0.999975, Val Loss: 0.85800429, Val R²: 0.634637
+Epoch 149/200
+Train Loss: 0.00005244, Train R²: 0.999977, Val Loss: 0.85816731, Val R²: 0.634567
+Epoch 150/200
+Train Loss: 0.00003563, Train R²: 0.999984, Val Loss: 0.85799238, Val R²: 0.634642
+Epoch 151/200
+Train Loss: 0.00003602, Train R²: 0.999984, Val Loss: 0.85808013, Val R²: 0.634604
+Epoch 152/200
+Train Loss: 0.00002575, Train R²: 0.999988, Val Loss: 0.85809265, Val R²: 0.634599
+Epoch 153/200
+Train Loss: 0.00004068, Train R²: 0.999982, Val Loss: 0.85793456, Val R²: 0.634666
+Epoch 154/200
+Train Loss: 0.00007360, Train R²: 0.999967, Val Loss: 0.85810152, Val R²: 0.634595
+Epoch 155/200
+Train Loss: 0.00005970, Train R²: 0.999973, Val Loss: 0.85833865, Val R²: 0.634494
+Epoch 00155: reducing learning rate of group 0 to 1.2207e-07.
+Epoch 156/200
+Train Loss: 0.00004195, Train R²: 0.999981, Val Loss: 0.85806478, Val R²: 0.634611
+Epoch 157/200
+Train Loss: 0.00002954, Train R²: 0.999987, Val Loss: 0.85806444, Val R²: 0.634611
+Epoch 158/200
+Train Loss: 0.00005555, Train R²: 0.999975, Val Loss: 0.85806429, Val R²: 0.634611
+Epoch 159/200
+Train Loss: 0.00003028, Train R²: 0.999986, Val Loss: 0.85813892, Val R²: 0.634579
+Epoch 160/200
+Train Loss: 0.00004541, Train R²: 0.999980, Val Loss: 0.85804507, Val R²: 0.634619
+Epoch 161/200
+Train Loss: 0.00004595, Train R²: 0.999979, Val Loss: 0.85807473, Val R²: 0.634607
+Epoch 162/200
+Train Loss: 0.00006449, Train R²: 0.999971, Val Loss: 0.85816335, Val R²: 0.634569
+Epoch 163/200
+Train Loss: 0.00003085, Train R²: 0.999986, Val Loss: 0.85804380, Val R²: 0.634620
+Epoch 164/200
+Train Loss: 0.00002664, Train R²: 0.999988, Val Loss: 0.85806293, Val R²: 0.634612
+Epoch 165/200
+Train Loss: 0.00002873, Train R²: 0.999987, Val Loss: 0.85814392, Val R²: 0.634577
+Epoch 166/200
+Train Loss: 0.00003999, Train R²: 0.999982, Val Loss: 0.85807137, Val R²: 0.634608
+Epoch 00166: reducing learning rate of group 0 to 6.1035e-08.
+Epoch 167/200
+Train Loss: 0.00004008, Train R²: 0.999982, Val Loss: 0.85806270, Val R²: 0.634612
+Epoch 168/200
+Train Loss: 0.00007394, Train R²: 0.999967, Val Loss: 0.85818781, Val R²: 0.634558
+Epoch 169/200
+Train Loss: 0.00006059, Train R²: 0.999973, Val Loss: 0.85808761, Val R²: 0.634601
+Epoch 170/200
+Train Loss: 0.00002680, Train R²: 0.999988, Val Loss: 0.85805201, Val R²: 0.634616
+Epoch 171/200
+Train Loss: 0.00002191, Train R²: 0.999990, Val Loss: 0.85814355, Val R²: 0.634577
+Epoch 172/200
+Train Loss: 0.00004576, Train R²: 0.999980, Val Loss: 0.85804341, Val R²: 0.634620
+Epoch 173/200
+Train Loss: 0.00003741, Train R²: 0.999983, Val Loss: 0.85809579, Val R²: 0.634598
+Epoch 174/200
+Train Loss: 0.00004403, Train R²: 0.999980, Val Loss: 0.85804347, Val R²: 0.634620
+Epoch 175/200
+Train Loss: 0.00003336, Train R²: 0.999985, Val Loss: 0.85806252, Val R²: 0.634612
+Epoch 176/200
+Train Loss: 0.00005580, Train R²: 0.999975, Val Loss: 0.85830319, Val R²: 0.634509
+Epoch 177/200
+Train Loss: 0.00003797, Train R²: 0.999983, Val Loss: 0.85796751, Val R²: 0.634652
+Epoch 00177: reducing learning rate of group 0 to 3.0518e-08.
+Epoch 178/200
+Train Loss: 0.00004850, Train R²: 0.999978, Val Loss: 0.85797329, Val R²: 0.634650
+Epoch 179/200
+Train Loss: 0.00006743, Train R²: 0.999970, Val Loss: 0.85806143, Val R²: 0.634612
+Epoch 180/200
+Train Loss: 0.00003430, Train R²: 0.999985, Val Loss: 0.85806146, Val R²: 0.634612
+Epoch 181/200
+Train Loss: 0.00003392, Train R²: 0.999985, Val Loss: 0.85805325, Val R²: 0.634616
+Epoch 182/200
+Train Loss: 0.00004587, Train R²: 0.999979, Val Loss: 0.85806143, Val R²: 0.634612
+Epoch 183/200
+Train Loss: 0.00003458, Train R²: 0.999985, Val Loss: 0.85804233, Val R²: 0.634620
+Epoch 184/200
+Train Loss: 0.00004139, Train R²: 0.999981, Val Loss: 0.85805094, Val R²: 0.634617
+Epoch 185/200
+Train Loss: 0.00005833, Train R²: 0.999974, Val Loss: 0.85816158, Val R²: 0.634570
+Epoch 186/200
+Train Loss: 0.00004641, Train R²: 0.999979, Val Loss: 0.85804232, Val R²: 0.634620
+Epoch 187/200
+Train Loss: 0.00007017, Train R²: 0.999969, Val Loss: 0.85816162, Val R²: 0.634570
+Epoch 188/200
+Train Loss: 0.00002927, Train R²: 0.999987, Val Loss: 0.85814248, Val R²: 0.634578
+Epoch 00188: reducing learning rate of group 0 to 1.5259e-08.
+Epoch 189/200
+Train Loss: 0.00003297, Train R²: 0.999985, Val Loss: 0.85816167, Val R²: 0.634570
+Epoch 190/200
+Train Loss: 0.00003226, Train R²: 0.999986, Val Loss: 0.85806151, Val R²: 0.634612
+Epoch 191/200
+Train Loss: 0.00003127, Train R²: 0.999986, Val Loss: 0.85806744, Val R²: 0.634610
+Epoch 192/200
+Train Loss: 0.00003221, Train R²: 0.999986, Val Loss: 0.85804234, Val R²: 0.634620
+Epoch 193/200
+Train Loss: 0.00002189, Train R²: 0.999990, Val Loss: 0.85807796, Val R²: 0.634605
+Epoch 194/200
+Train Loss: 0.00004034, Train R²: 0.999982, Val Loss: 0.85806149, Val R²: 0.634612
+Epoch 195/200
+Train Loss: 0.00003357, Train R²: 0.999985, Val Loss: 0.85808657, Val R²: 0.634602
+Epoch 196/200
+Train Loss: 0.00005953, Train R²: 0.999973, Val Loss: 0.85804234, Val R²: 0.634620
+Epoch 197/200
+Train Loss: 0.00004310, Train R²: 0.999981, Val Loss: 0.85804232, Val R²: 0.634620
+Epoch 198/200
+Train Loss: 0.00004678, Train R²: 0.999979, Val Loss: 0.85806141, Val R²: 0.634612
+Epoch 199/200
+Train Loss: 0.00002534, Train R²: 0.999989, Val Loss: 0.85806142, Val R²: 0.634612
+Epoch 200/200
+Train Loss: 0.00003437, Train R²: 0.999985, Val Loss: 0.85804229, Val R²: 0.634620
+Training Complete. Best Val Loss: 0.844275532245636
+训练时间: 1031.45 秒
