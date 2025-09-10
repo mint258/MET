@@ -1,32 +1,159 @@
-note:*表示主干训练过程的部分
-所有的训练以及微调脚本均使用args，如果需要试用可以直接进入查看具体用法
+MET: Molecular Equivariant Transformer — Pretrain on Atomic Charges, Fine-Tune for Properties
+============================================================================================
 
-*charge_predict中的是使用EGNN，以原子index和坐标为输入，输出电荷的一系列脚本，预测得到的模型是预训练模型
-	comenet4charge.py和features.py文件是预训练阶段的架构文件
-	training_charge_model.py是训练用的脚本，主要用于调整不同的维度、训练集等
-	dataset_without_charge.py是用于提取QM9数据集的dataloader脚本
+MET is a symmetry-aware pretraining framework for molecular representation learning.
+It couples an Equivariant Graph Neural Network (EGNN) with Transformer layers and is
+pretrained to predict atomic partial charges from 3D geometries. The pretrained encoder
+can be fine-tuned to downstream molecular properties (e.g., QM7/QM9), and is especially
+effective in low-data regimes.
 
-*fine-tune里的脚本是对charge_predict生成的预训练模型进行微调，pooling得到单一性质的模型
-	预训练阶段用到的架构文件均需要用到
-	FineTunedModel.py和embedding2property.py调用了comenet4charge.py中的预训练架构，并接入了微调时的层
-	fine_tune_training.py是用于微调的脚本，在使用时必须使用预训练已经训练好的模型，我们主要使用的模型是2024/12/7 训练得到的best_model_dim128_1.pth
+Paper
+------
+Molecular Equivariant Transformer (MET) — ChemRxiv, 2025
+Link: https://chemrxiv.org/engage/chemrxiv/article-details/689e8887a94eede154d606f4
 
-benchmark里是测试公开数据集的结果，其中network为微调脚本所在处，dataset为储存有几何结构的数据集所在处
-	使用的微调脚本和fine-tune中基本一致，除了dataloader更换为了适用于微调数据集的形式
-	benchmark目录下的py文件是可以生成标准xyz格式的脚本和处理测试集中带有无法解析原子分子的脚本
 
-data是QM9的数据集的文件夹，里面有几个不同尺寸的训练集
+Repository Layout
+-----------------
+.
+├── LICENSE
+├── MET.yml
+├── data/
+│   ├── QM9/
+│   └── QM7/
+├── pretrained_ckpt/                  # Provided pretrained weights (e.g., best_model_dim128.pth)
+├── fine-tuned_ckpt/                  # Fine-tuned weights will be saved here
+├── pretrain/                         # Pretraining: charges from 3D (EGNN backbone)
+│   ├── comenet4charge.py             # Pretraining model definition
+│   ├── features.py                   # Featurization utilities
+│   ├── dataset_without_charge.py     # Dataloader for QM9 (charges as labels)
+│   ├── training_charge_model.py      # Training script
+│   ├── charge_predict.py             # Inference on new molecules; scatter of pred vs. ref
+│   └── (artifacts: best_comenet_model.pth, embeddings/, charges/, ...)
+├── fine-tune/                        # Fine-tuning: pool embeddings -> target property
+│   ├── FineTunedModel.py
+│   ├── embedding2property.py         # Heads / readouts for properties
+│   ├── dataset_finetune.py           # Flexible I/O: XYZ or CSV (can RDKit-generate coords)
+│   ├── fine_tune_training.py         # Fine-tuning script (requires pretrained checkpoint)
+│   └── property_predict.py           # Inference & scatter plot for properties
+├── alignment_analysis/               # Embedding visualization / clustering
+│   ├── embedding_plot.py             # For custom XYZ sets
+│   └── embedding_plot_qm9.py         # For QM9 splits
+└── run_quickstart.sh                 # One-command demo (inference + visualization)
 
-下面是比较和画图部分
 
-summary/中存放着生成figure2和figure3的脚本
-	其中GNN_EGNN_comparison.py是GNN和EGNN在预训练上的准确度比较的散点图生成脚本，使用方法为python GNN_EGNN_comparison.py --checkpoint_a  best_gnn_transformer_model_1.pth --checkpoint_b best_model_dim128_1.pth --model_a smiles2vec --model_b comenet_charge --test_data_root ../../data/data_valid_test/ --batch_size 64 --plot_path charge_compare.svg
-	finetune_vs_direct是用微调模型和直接训练模型在QM9测试集的不同样本量和不同物理量上得到的结果比较的折线图生成脚本，使用方法为python finetune_vs_direct.py --log-dir finetune_direct_test/ --out finetune_vs_direct_r2.svg
-	property_predict_qm7是微调模型和直接训练模型在QM7测试集上的准确度比较的散点图生成脚本，使用方法为python property_predict_qm7.py --checkpoint_a ../result/QM7/finetune_direct_test/best_qm7_layer_4_data500.pth --checkpoint_b ../result/QM7/finetune_direct_test/best_qm7_layer_0_data_500.pth --test_data_root ../data/qm7_divide/test/ --target_property rot_A --plot_path qm7.svg
-	atom_embedding_dim是不同潜空间维度和预训练样本量下的结果比较的折线图生成脚本，使用方法为python atom_embedding_dim.py --root atom_dim_test/
-	auto_freeze_layer是消融实验的数据提取器，使用方法为python auto_freeze_layer.py --log_dir freeze_layer_test/HOMO/ --output freeze_layer.pdf
+Requirements
+------------
+- Python 3.9+
+- PyTorch (CUDA optional)
+- RDKit (optional; needed only when generating 3D from SMILES/CSV during fine-tuning)
+- Standard scientific Python stack (numpy, scipy, matplotlib, etc.)
 
-analysis/中存放着聚类实验所用到的脚本
-	embedding_plot是用于我们手工构建数据集生成聚类分析结果的脚本，用法是python embedding_plot.py --xyz_dir new_xyz_structures/ --model_path best_model_dim128_1.pth --device cuda --perplexity 12 --batch_size 50
-	embedding_plot_qm9是用于我们QM9数据集生成聚类分析结果的脚本，用法是python embedding_plot_qm9.py --xyz_dir ../../database/ --model_path best_model_dim128_1.pth --device cuda --perplexity 12 --batch_size 50   --mw_plot --dipole_plot --binary_group_plots
-	生成的图片均在analysis/latent_vis_results中
+
+Quick Start (No Training Required)
+----------------------------------
+1) Ensure minimal data paths exist:
+   - data/QM9/test_database/
+   - data/QM7/test_database/
+
+2) Ensure a pretrained weight exists (already included):
+   - pretrained_ckpt/best_model_dim128.pth
+
+3) From the repository root, run:
+   bash run_quickstart.sh
+
+What the script does:
+- Detects CUDA availability automatically.
+- Runs charge prediction on QM9 test set using the pretrained model (pretrain/charge_predict.py).
+- If a fine-tuned checkpoint exists under fine-tuned_ckpt/, also runs property prediction on QM7
+  (fine-tune/property_predict.py).
+- Produces example plots according to the scripts’ defaults or provided flags.
+
+
+Pretraining (Charges from 3D)
+------------------------------
+All pretraining scripts live in pretrain/. Typical usage:
+
+# Train (EGNN + Transformer, charges as labels):
+cd pretrain
+python training_charge_model.py \
+  --data_root ../data/QM9/train_valid_database/ \
+  --device cuda
+
+# Inference & scatter (pred vs. ref) on QM9 test:
+python charge_predict.py \
+  --checkpoint_path best_comenet_model.pth \
+  --test_data_root ../data/QM9/test_database/
+
+Model code:
+- comenet4charge.py (architecture)
+- features.py (featurization)
+Data loader:
+- dataset_without_charge.py (QM9)
+
+
+Fine-Tuning (Downstream Properties)
+-----------------------------------
+Scripts live in fine-tune/. You must provide a pretrained checkpoint.
+
+Example fine-tuning on QM9:
+cd fine-tune
+python fine_tune_training.py \
+  --pretrained_checkpoint_path ../pretrained_ckpt/best_model_dim128.pth \
+  --data_root ../data/QM9/test_database/ \
+  --target_property P7 P8 P9 \
+  --dropout 0 --learning_rate 1e-4 \
+  --freeze_up_to_layer 4 --num_layers 0 \
+  --seed 114 --batch_size 32
+
+Example fine-tuning on QM7 (small split):
+cd fine-tune
+python fine_tune_training.py \
+  --pretrained_checkpoint_path ../pretrained_ckpt/best_model_dim128.pth \
+  --data_root ../data/QM7/train_database_300/ \
+  --target_property P2 \
+  --dropout 0 --learning_rate 1e-4 \
+  --freeze_up_to_layer 4 --num_layers 0 \
+  --seed 114 --batch_size 32
+
+Inference after fine-tuning (scatter of predicted vs. true):
+cd fine-tune
+python property_predict.py \
+  --checkpoint ../fine-tuned_ckpt/qm7/qm7_data500.pth \
+  --test_data_root ../data/QM7/test_database/ \
+  --target_property P2 \
+  --plot_path qm7.png
+
+Notes:
+- dataset_finetune.py supports (1) XYZ folders and (2) CSV without coordinates.
+  When coordinates are missing, RDKit is used to generate 3D structures.
+
+
+Embedding Visualization (Clustering / t-SNE)
+--------------------------------------------
+cd alignment_analysis
+
+# For a custom XYZ folder:
+python embedding_plot.py \
+  --xyz_dir new_xyz_structures/ \
+  --model_path ../pretrained_ckpt/best_model_dim128.pth \
+  --device cuda --perplexity 12 --batch_size 50
+
+# For QM9 test split + optional MW/dipole overlays:
+python embedding_plot_qm9.py \
+  --xyz_dir ../data/QM9/test_database/ \
+  --model_path ../pretrained_ckpt/best_model_dim128.pth \
+  --device cuda --perplexity 12 --batch_size 50 \
+  --mw_plot --dipole_plot --binary_group_plots
+
+
+Citation
+--------
+If you find this repository useful, please cite:
+Molecular Equivariant Transformer (MET) — ChemRxiv, 2025.
+https://chemrxiv.org/engage/chemrxiv/article-details/689e8887a94eede154d606f4
+
+
+License
+-------
+This project is released under the license found in the LICENSE file.

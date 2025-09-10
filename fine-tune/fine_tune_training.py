@@ -19,7 +19,7 @@ from torch_geometric.data import Batch
 # 确保路径正确
 sys.path.append(os.path.abspath('../charge_predict'))
 
-from dataset_without_charge import MoleculeDataset
+from dataset_finetune import MoleculeDataset
 from embedding2property import MolecularTransformer
 from comenet4charge import ComENetAutoEncoder
 
@@ -75,22 +75,34 @@ class FineTunedModel(nn.Module):
         
         return output
 
-def custom_collate_fn(batch):
+def custom_collate_fn_factory(target_indices):
     """
-    自定义的 collate_fn，用于处理分子数据对象，生成批次。
-    
-    参数：
-        batch (list of tuples): 每个元素是 (Data, target_values)。
-    
-    返回:
-        Tuple:
-            - batch_data (Batch): 批次的分子数据对象
-            - targets (Tensor): 目标分子性质，形状为 [batch_size, num_properties].
+    生成一个 collate_fn：
+      - 输入: List[Data]
+      - 输出: (Batch, Tensor[batch, n_props])
+    若样本在目标性质上存在 NaN，则跳过该样本。
     """
-    data_list, targets = zip(*batch)
-    batch_data = Batch.from_data_list(data_list)
-    targets = torch.stack(targets)  # [batch_size, num_properties]
-    return batch_data, targets
+    def _fn(batch):
+        data_kept = []
+        tgt_list = []
+        for data in batch:
+            # data.scalar_props: [P], 可能包含 NaN
+            vals = data.scalar_props[target_indices]
+            if torch.isnan(vals).any():
+                # 跳过缺失样本，避免把 NaN 送进损失
+                continue
+            data_kept.append(data)
+            tgt_list.append(vals)
+        if len(data_kept) == 0:
+            # 退化情形：全部缺失，随便保留一个样本并用 0 占位，避免 DataLoader 死掉
+            data = batch[0]
+            data_kept = [data]
+            vals = torch.zeros((len(target_indices),), dtype=torch.float)
+            tgt_list = [vals]
+        batch_data = Batch.from_data_list(data_kept)
+        targets = torch.stack(tgt_list, dim=0)
+        return batch_data, targets
+    return _fn
 
 def train_epoch(model, device, train_loader, optimizer, criterion):
     """
@@ -230,45 +242,7 @@ def main():
     print(f"Using device: {device}")
     
     # 创建数据集
-    dataset = MoleculeDataset(
-        root=args.data_root
-    )
-    
-    # 创建 PropertyPredictionDataset
-    class PropertyPredictionDataset(MoleculeDataset):
-        def __init__(self, root, target_property, transform=None, pre_transform=None):
-            super(PropertyPredictionDataset, self).__init__(root, transform, pre_transform)
-            
-            # target_property 现在是一个列表
-            if not isinstance(target_property, list):
-                raise TypeError("target_property 应该是一个列表，包含一个或多个属性名称。")
-            
-            # 验证每个 target_property 是否在 all_properties 中
-            for prop in target_property:
-                if prop not in self.all_properties:
-                    raise ValueError(f"Target property '{prop}' is not in the list of all_properties.")
-            
-            self.target_properties = target_property
-            self.target_indices = [self.property_to_index[prop] for prop in self.target_properties]
-        
-        def get(self, idx):
-            """
-            获取指定索引的数据。
-            
-            返回：
-                Tuple[Data, Tensor]: (分子数据对象, 目标分子性质值的张量)
-            """
-            data = super(PropertyPredictionDataset, self).get(idx)
-            target_values = data.scalar_props[self.target_indices]
-            return data, target_values
-    
-    # 实例化 PropertyPredictionDataset
-    dataset = PropertyPredictionDataset(
-        root=args.data_root,
-        target_property=args.target_property,
-        transform=None,
-        pre_transform=None
-    )
+    dataset = MoleculeDataset(root=args.data_root)
     
     # 提取可用的目标属性（从数据集中获取）
     available_properties = dataset.all_properties
@@ -281,6 +255,9 @@ def main():
     print(f"Selected target_properties: {args.target_property}")
     print(f"Available target properties: {available_properties}")
     
+    # 目标列索引（用于 collate_fn 从 data.scalar_props 中抽取）
+    target_indices = [dataset.property_to_index[p] for p in args.target_property]
+
     # 划分训练集和验证集
     val_size = int(len(dataset) * args.val_split)
     train_size = len(dataset) - val_size
@@ -292,15 +269,15 @@ def main():
         train_dataset,
         batch_size=args.batch_size,
         shuffle=True,
-        collate_fn=custom_collate_fn,
+        collate_fn=custom_collate_fn_factory(target_indices),
         num_workers=4
     )
-    
+
     val_loader = DataLoader(
         val_dataset,
         batch_size=args.batch_size,
         shuffle=False,
-        collate_fn=custom_collate_fn,
+        collate_fn=custom_collate_fn_factory(target_indices),
         num_workers=4
     )
     
