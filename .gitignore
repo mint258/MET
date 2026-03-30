@@ -23,6 +23,11 @@ data/QM7/*.lmdb
 data/QM9/*.lmdb
 hf_dataset_upload/
 
+# Local checkpoint artifacts distributed via Hugging Face Model instead of GitHub
+pretrained_ckpt/
+fine-tuned_ckpt/
+hf_model_upload/
+
 # Local experiment outputs and smoke-test artifacts
 outputs/
 training_plot.png

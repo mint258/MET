@@ -7,6 +7,7 @@ Repository for:
 - Journal status: accepted by *Molecular Systems Design & Engineering (MSDE)*
 - DOI: https://doi.org/10.1039/D5ME00173K
 - Prebuilt LMDB dataset release: https://huggingface.co/datasets/Mint258/MET-dateset
+- Checkpoint release: https://huggingface.co/Mint258/MET-models
 
 ## Overview
 
@@ -31,6 +32,14 @@ https://huggingface.co/datasets/Mint258/MET-dateset
 
 Download the LMDB files from that dataset page and place them under `data/QM7/` and `data/QM9/` locally if you want to use the ready-made binary datasets. The conversion scripts in this repository are still available if you prefer to regenerate the LMDB files from local `xyz` inputs.
 
+## Checkpoint Release
+
+Pretrained and fine-tuned checkpoints are hosted on Hugging Face rather than in this GitHub repository:
+
+https://huggingface.co/Mint258/MET-models
+
+If you want to reuse the released weights with the existing commands in this repository, download the files from that model page and place them under local `pretrained_ckpt/` and `fine-tuned_ckpt/` directories.
+
 ## Repository Layout
 
 ```text
@@ -41,8 +50,6 @@ MET/
 ├── pretrain/
 ├── fine-tune/
 ├── alignment_analysis/
-├── pretrained_ckpt/
-├── fine-tuned_ckpt/
 ├── scripts/
 ├── MET.yml
 ├── requirements-minimal.txt
@@ -383,26 +390,26 @@ All values below were re-evaluated with the current code in the `chemprop` envir
 
 | Checkpoint | Dataset | Metric |
 |---|---|---|
-| `pretrained_ckpt/best_model_dim128.pth` | QM9 test atomic charges (`lmdb`) | MAE `0.06765`, MSE `0.01675`, R² `0.6963` |
+| `best_model_dim128.pth` | QM9 test atomic charges (`lmdb`) | MAE `0.06765`, MSE `0.01675`, R² `0.6963` |
 
 ### QM7 Checkpoints
 
 | Checkpoint | Target | MAE | RMSE | R² |
 |---|---|---:|---:|---:|
-| `fine-tuned_ckpt/qm7/qm7_data100.pth` | `atomization_energy` | 215.3193 | 267.0371 | -0.3952 |
-| `fine-tuned_ckpt/qm7/qm7_data300.pth` | `atomization_energy` | 102.1142 | 135.4177 | 0.6412 |
-| `fine-tuned_ckpt/qm7/qm7_data500.pth` | `atomization_energy` | 93.1684 | 121.8443 | 0.7095 |
-| `fine-tuned_ckpt/qm7/qm7_data800.pth` | `atomization_energy` | 86.8120 | 121.5446 | 0.7110 |
-| `fine-tuned_ckpt/qm7/qm7_data1000.pth` | `atomization_energy` | 70.2080 | 90.5087 | 0.8397 |
+| `qm7_data100.pth` | `atomization_energy` | 215.3193 | 267.0371 | -0.3952 |
+| `qm7_data300.pth` | `atomization_energy` | 102.1142 | 135.4177 | 0.6412 |
+| `qm7_data500.pth` | `atomization_energy` | 93.1684 | 121.8443 | 0.7095 |
+| `qm7_data800.pth` | `atomization_energy` | 86.8120 | 121.5446 | 0.7110 |
+| `qm7_data1000.pth` | `atomization_energy` | 70.2080 | 90.5087 | 0.8397 |
 
 ### QM9 Dipole Checkpoints
 
 | Checkpoint | Target | MAE | RMSE | R² |
 |---|---|---:|---:|---:|
-| `fine-tuned_ckpt/dipole/dipole_data1000.pth` | `dipole` | 1.0547 | 1.7378 | 0.1927 |
-| `fine-tuned_ckpt/dipole/dipole_data5000.pth` | `dipole` | 0.7664 | 1.4047 | 0.4726 |
-| `fine-tuned_ckpt/dipole/dipole_data20000.pth` | `dipole` | 0.4015 | 0.9527 | 0.7574 |
-| `fine-tuned_ckpt/dipole/dipole_data100000.pth` | `dipole` | 0.1999 | 0.4544 | 0.9448 |
+| `dipole_data1000.pth` | `dipole` | 1.0547 | 1.7378 | 0.1927 |
+| `dipole_data5000.pth` | `dipole` | 0.7664 | 1.4047 | 0.4726 |
+| `dipole_data20000.pth` | `dipole` | 0.4015 | 0.9527 | 0.7574 |
+| `dipole_data100000.pth` | `dipole` | 0.1999 | 0.4544 | 0.9448 |
 
 ### Smoke-Test Metrics Added in This Update
 
@@ -432,5 +439,5 @@ python scripts/run_experiment.py finetune-qm9-dipole --subset_size 1000 --epochs
 pip install -r requirements-optional.txt
 ```
 
-- The long-running paper reproduction experiments were not retrained to completion during this maintenance pass, but the bundled checkpoints, evaluation commands, LMDB conversion path, deterministic subset generation, and all new smoke tests were validated end to end.
+- The long-running paper reproduction experiments were not retrained to completion during this maintenance pass, but the released checkpoints, evaluation commands, LMDB conversion path, deterministic subset generation, and all new smoke tests were validated end to end.
 - If you want to benchmark your local environment first, run the evaluation commands above before launching a full retraining job.
