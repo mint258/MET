@@ -1,5 +1,9 @@
 # MET: Molecular Equivariant Transformer
 
+<p align="center">
+  <img src="ToC.jpg" alt="MET Table of Contents graphic" width="720">
+</p>
+
 Repository for:
 
 **Integrating equivariant architectures and charge supervision for data-efficient molecular property prediction**
