@@ -6,6 +6,7 @@ Repository for:
 
 - Journal status: accepted by *Molecular Systems Design & Engineering (MSDE)*
 - DOI: https://doi.org/10.1039/D5ME00173K
+- PyPI package: https://pypi.org/project/mint258-met/
 - Prebuilt LMDB dataset release: https://huggingface.co/datasets/Mint258/MET-dateset
 - Checkpoint release: https://huggingface.co/Mint258/MET-models
 
@@ -15,6 +16,7 @@ MET first pretrains an equivariant 3D molecular encoder on **atomic partial char
 
 This maintained repository includes:
 
+- an installable PyPI package for embedding extraction and downstream fine-tuning
 - unified pretraining, fine-tuning, and evaluation entrypoints
 - deterministic manifest generation for the low-data settings in the paper
 - QM9 support in both `xyz` and `lmdb` formats for pretraining
@@ -23,6 +25,136 @@ This maintained repository includes:
 - checkpoint loading utilities for both pretrained and fine-tuned `.pth` files
 - pure-PyTorch fallbacks for graph and scatter ops, so `torch_cluster` / `torch_scatter` are optional rather than mandatory
 - a minimal environment file and requirements list derived from the actual imports in this codebase
+
+## PyPI API
+
+For direct downstream use, install the published package instead of cloning the whole repository:
+
+```bash
+pip install mint258-met
+```
+
+The PyPI package is fine-tuning-oriented. It downloads the released pretrained MET checkpoint from Hugging Face by default and exposes two high-level APIs:
+
+- `METEncoder` for atom-level embeddings with shape `[N, D]`
+- `METFineTuner` for downstream regression with built-in CSV / XYZ dataloaders
+
+### Minimal Embedding Example
+
+```python
+from met import METEncoder
+
+encoder = METEncoder.from_pretrained(device="cpu")
+atom_embeddings = encoder.embed_smiles("CCO", num_conformers=4)
+print(atom_embeddings.shape)  # [N, D]
+```
+
+You can also embed from `xyz` input:
+
+```python
+atom_embeddings = encoder.embed_xyz("molecule.xyz")
+```
+
+### Minimal Fine-Tuning Example
+
+```python
+from met import METFineTuner
+
+model = METFineTuner.from_pretrained(
+    device="cpu",
+    output_dim=1,
+    hidden_dim=256,
+    layers=2,
+    dropout=0.1,
+    pooling_time="after_last_layer",
+    pooling_method="attention",
+    normalization="layernorm",
+)
+
+model.set_trainable_encoder_blocks(trainable_blocks=1)
+
+history = model.fit_csv(
+    csv_path="my_dataset.csv",
+    smiles_column="smiles",
+    target_columns=["target"],
+    num_conformers=8,
+    epochs=10,
+    batch_size=16,
+    learning_rate=1e-4,
+)
+```
+
+### API Summary
+
+`METEncoder` methods:
+
+- `from_pretrained(...)`
+- `embed_smiles(...)`
+- `embed_xyz(...)`
+- `embed_smiles_batch(...)`
+
+`METFineTuner` methods:
+
+- `from_pretrained(...)`
+- `fit_csv(...)`
+- `fit_xyz(...)`
+- `predict_csv(...)`
+- `predict_xyz(...)`
+- `predict_smiles(...)`
+- `evaluate_csv(...)`
+- `evaluate_xyz(...)`
+- `freeze_encoder()`
+- `unfreeze_encoder()`
+- `set_trainable_encoder_blocks(...)`
+- `set_trainable_modules(...)`
+
+### Default Downstream Head
+
+The default fine-tuning head can be configured through:
+
+- `output_dim`
+- `hidden_dim`
+- `layers`
+- `dropout`
+- `pooling_time`
+- `pooling_method`
+- `normalization`
+
+`pooling_time="after_last_layer"` means node embeddings are transformed first and pooled at the end.  
+`pooling_time="before_head"` means node embeddings are pooled first and the graph-level representation is refined afterward.
+
+### Custom Heads
+
+You can replace the built-in head with your own `torch.nn.Module`:
+
+```python
+import torch.nn as nn
+from met import METFineTuner
+
+
+class MyHead(nn.Module):
+    def __init__(self, input_dim, output_dim):
+        super().__init__()
+        self.proj = nn.Linear(input_dim, output_dim)
+
+    def forward(self, node_embeddings, mask):
+        pooled = node_embeddings.mean(dim=1)
+        return self.proj(pooled)
+
+
+model = METFineTuner.from_pretrained(device="cpu", output_dim=1, head=MyHead(128, 1))
+```
+
+The custom head must accept:
+
+- `node_embeddings` with shape `[batch, max_nodes, dim]`
+- `mask` with shape `[batch, max_nodes]`
+
+and return predictions with shape `[batch, output_dim]`.
+
+### Package Source
+
+The package source used to build the PyPI release is stored in `PyPI/`.
 
 ## Dataset Release
 
