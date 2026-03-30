@@ -18,6 +18,11 @@ Thumbs.db
 # LMDB runtime lock files
 *.lmdb-lock
 
+# Local LMDB artifacts distributed via Hugging Face instead of GitHub
+data/QM7/*.lmdb
+data/QM9/*.lmdb
+hf_dataset_upload/
+
 # Local experiment outputs and smoke-test artifacts
 outputs/
 training_plot.png

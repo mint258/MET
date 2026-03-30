@@ -6,6 +6,7 @@ Repository for:
 
 - Journal status: accepted by *Molecular Systems Design & Engineering (MSDE)*
 - DOI: https://doi.org/10.1039/D5ME00173K
+- Prebuilt LMDB dataset release: https://huggingface.co/datasets/Mint258/MET-dateset
 
 ## Overview
 
@@ -21,6 +22,14 @@ This maintained repository includes:
 - checkpoint loading utilities for both pretrained and fine-tuned `.pth` files
 - pure-PyTorch fallbacks for graph and scatter ops, so `torch_cluster` / `torch_scatter` are optional rather than mandatory
 - a minimal environment file and requirements list derived from the actual imports in this codebase
+
+## Dataset Release
+
+Prebuilt QM7 and QM9 LMDB files are hosted on Hugging Face rather than in this GitHub repository:
+
+https://huggingface.co/datasets/Mint258/MET-dateset
+
+Download the LMDB files from that dataset page and place them under `data/QM7/` and `data/QM9/` locally if you want to use the ready-made binary datasets. The conversion scripts in this repository are still available if you prefer to regenerate the LMDB files from local `xyz` inputs.
 
 ## Repository Layout
 
@@ -82,7 +91,7 @@ Pretraining now accepts either:
 - a manifest of `xyz` files such as `manifests/qm9_train_100.txt`
 - a single-file `lmdb` database such as `data/QM9/train_valid_database.lmdb`
 
-The original data is provided in data/
+Prebuilt LMDB files are available from the Hugging Face dataset release above. If you still keep the original `xyz` files locally, you can also regenerate the LMDB files with the scripts below.
 
 ### Downstream Fine-Tuning Input
 
@@ -147,6 +156,23 @@ You can also call the same workflow via:
 
 ```bash
 python scripts/run_experiment.py build-qm9-lmdb
+```
+
+## Building QM7 LMDB Files
+
+Convert any QM7 `xyz` directory or manifest into a single-file LMDB database:
+
+```bash
+python scripts/build_qm7_lmdb.py \
+  --input_root data/QM7/full_database \
+  --output_path data/QM7/full_database.lmdb \
+  --map_size_gb 0.064
+```
+
+You can also call the same workflow via:
+
+```bash
+python scripts/run_experiment.py build-qm7-lmdb
 ```
 
 ## Pretraining
