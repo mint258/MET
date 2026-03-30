@@ -1,224 +1,133 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
+
+from __future__ import annotations
 
 import argparse
-import torch
-from torch_geometric.loader import DataLoader
-import os
-import pandas as pd
-from tqdm import tqdm
-import numpy as np
-import json
-import pickle
-import periodictable
-from torch_geometric.data import Batch
-import matplotlib.pyplot as plt
-from sklearn.metrics import mean_squared_error, r2_score
+import sys
+from pathlib import Path
+from typing import List, Tuple
 
-# 假设 ComENetAutoEncoder 和 MoleculeDataset 在当前文件中定义或已导入
+import matplotlib.pyplot as plt
+import periodictable
+import torch
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from torch_geometric.loader import DataLoader
+from tqdm import tqdm
+
+ROOT_DIR = Path(__file__).resolve().parents[1]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.append(str(ROOT_DIR))
+
 from comenet4charge import ComENetAutoEncoder
 from dataset_without_charge import MoleculeDataset
+from met_utils import build_pretrained_model, ensure_parent_dir, resolve_device, save_json
 
-def load_model(checkpoint_path, device):
-    """
-    加载训练好的模型。
 
-    参数：
-        checkpoint_path (str): 模型检查点文件的路径。
-        device (torch.device): 设备（CPU或GPU）。
-
-    返回：
-        model (ComENetAutoEncoder): 加载了权重的模型。
-    """
-    if not os.path.exists(checkpoint_path):
-        raise FileNotFoundError(f"Checkpoint file not found at {checkpoint_path}")
-
+def load_model(checkpoint_path: str, device: torch.device):
     checkpoint = torch.load(checkpoint_path, map_location=device)
-    # print("Checkpoint state_dict keys and shapes:")
-    # for k, v in checkpoint['model_state_dict'].items():
-    #     print(k, v.shape)
-        
-    # 假设模型初始化参数已知并与训练时相同
-    model = ComENetAutoEncoder(
-        cutoff=checkpoint.get('cutoff', 8.0),
-        num_layers=checkpoint.get('num_layers', 4),
-        hidden_channels=checkpoint.get('hidden_channels', 256),
-        middle_channels=checkpoint.get('middle_channels', 256),
-        out_channels=1,  # 每个节点一个电荷值
-        atom_embedding_dim=checkpoint.get('atom_embedding_dim', 128),
-        num_radial=checkpoint.get('num_radial', 8),
-        num_spherical=checkpoint.get('num_spherical', 5),
-        num_output_layers=3,
-        transformer_layers=checkpoint.get('transformer_layers', 1),
-        nhead_z=checkpoint.get('nhead_z', 1),
-        device=device
-    )
-
-    # print("\nCurrent model state_dict keys and shapes:")
-    # for k, v in model.state_dict().items():
-    #     print(k, v.shape)
-        
-    model.load_state_dict(checkpoint['model_state_dict'])
-
-    # load_result = model.load_state_dict(checkpoint['model_state_dict'], strict=False)
-
-    # if load_result.missing_keys:
-    #     print("Warning: The following keys were missing in the checkpoint and not loaded:")
-    #     for k in load_result.missing_keys:
-    #         print(k)
-    # if load_result.unexpected_keys:
-    #     print("Warning: The following keys in the checkpoint were unexpected and not loaded:")
-    #     for k in load_result.unexpected_keys:
-    #         print(k)
-            
-    model.to(device)
-    model.eval()  # 设置为评估模式
+    model, _ = build_pretrained_model(ComENetAutoEncoder, checkpoint, device)
+    model.eval()
     return model
 
-def predict(model, device, loader, charges_dir):
-    """
-    使用模型进行预测。
 
-    参数：
-        model (ComENetAutoEncoder): 训练好的模型。
-        device (torch.device): 设备（CPU或GPU）。
-        loader (DataLoader): 数据加载器。
-        embeddings_dir (str): 保存嵌入向量的文件夹路径。
-        charges_dir (str): 保存电荷预测结果的文件夹路径。
-
-    返回：
-        None
-    """
-
-    # 创建输出文件夹（如果不存在）
-    os.makedirs(charges_dir, exist_ok=True)
-
-    # 定义索引到元素符号的映射
+def predict(model, device, loader, charges_dir: Path) -> Tuple[List[float], List[float]]:
+    charges_dir.mkdir(parents=True, exist_ok=True)
     element_dict_rev = {idx: element.symbol for idx, element in enumerate(periodictable.elements)}
 
-    all_true_charges = []
-    all_predicted_charges = []
-    
+    all_true = []
+    all_pred = []
     with torch.no_grad():
         for batch in tqdm(loader, desc="Predicting"):
-            # 打印 Batch 对象的属性以进行调试
-            # print('Batch :', batch)
+            filenames = batch.filename
+            batch = batch.to(device)
+            true_charges = batch.y.view(-1).cpu().numpy()
+            embeddings, predictions = model(batch)
+            predictions = predictions.view(-1).cpu().numpy()
+            all_true.extend(true_charges.tolist())
+            all_pred.extend(predictions.tolist())
 
-            # 访问自定义属性
-            filenames = batch.filename  # List[str], 长度为 batch_size
-            scalar_props = batch.scalar_props  # Tensor [batch_size, num_properties]
-            scalar_props = scalar_props.view(len(filenames),-1)
-
-            # print('filenames:', filenames)
-            # print('scalar_props:', scalar_props)
-
-            batch_data = batch.to(device)
-            
-            # 获取真实电荷值
-            true_charges = batch_data.y.view(-1).cpu().numpy()  # [total_num_nodes]
-
-            embeddings, predictions = model(batch_data)  # 获取嵌入向量和电荷预测
-            embeddings = embeddings.cpu().numpy()  # [total_num_nodes, atom_embedding_dim]
-            predictions = predictions.cpu().numpy()  # [total_num_nodes, 1]
-
-            all_true_charges.extend(true_charges.tolist())
-            all_predicted_charges.extend(predictions.tolist())
-            
-            # 获取每个分子在批次中的节点数
-            node_counts = batch_data.batch.bincount().cpu().numpy()  # [batch_size]
+            node_counts = batch.batch.bincount().cpu().numpy()
             start = 0
-            for count, filename, props in zip(node_counts, filenames, scalar_props):
+            for count, filename in zip(node_counts, filenames):
                 end = start + count
-                molecule_emb = embeddings[start:end]  # [num_nodes, atom_embedding_dim]
-                molecule_preds = predictions[start:end].flatten()  # [num_nodes]
-                molecule_x = batch_data.x[start:end, 0].cpu().numpy()  # [num_nodes]
-                molecule_pos = batch_data.pos[start:end].cpu().numpy()  # [num_nodes, 3]
-                molecule_true_charges = true_charges[start:end]  # [num_nodes]
+                molecule_preds = predictions[start:end]
+                molecule_x = batch.x[start:end, 0].cpu().numpy()
+                molecule_pos = batch.pos[start:end].cpu().numpy()
                 start = end
 
-                # 保存电荷预测
-                charges_filename = os.path.splitext(filename)[0] + '_charges.csv'
-                charges_path = os.path.join(charges_dir, charges_filename)
-                with open(charges_path, 'w') as f:
-                    # 写入标准 XYZ：第一行原子数，第二行注释，其后每行 元素 x y z 预测电荷
+                output_path = charges_dir / f"{Path(filename).stem}_charges.xyz"
+                with output_path.open("w", encoding="utf-8") as f:
                     f.write(f"{len(molecule_preds)}\n")
                     f.write("predicted_charges\n")
                     for atom_type_idx, pos, charge in zip(molecule_x, molecule_pos, molecule_preds):
-                        atom_type = element_dict_rev.get(atom_type_idx, 'Unknown')
-                        x, y, z = pos
-                        f.write(f"{atom_type} {x} {y} {z} {charge}\n")
-                        
-    return all_true_charges,  [item for sublist in all_predicted_charges for item in sublist]
+                        atom_type = element_dict_rev.get(int(atom_type_idx), "Unknown")
+                        f.write(f"{atom_type} {pos[0]} {pos[1]} {pos[2]} {charge}\n")
 
-def plot_results(true_charges, predicted_charges, plot_path):
-    """
-    绘制真实值与预测值的散点图，并在图上标注 R² 和 MSE。
+    return all_true, all_pred
 
-    参数：
-        true_charges (list): 真实的电荷值。
-        predicted_charges (list): 预测的电荷值。
-        plot_path (str): 绘图保存路径。
 
-    返回：
-        None
-    """
+def plot_results(true_charges, predicted_charges, plot_path: Path):
     mse = mean_squared_error(true_charges, predicted_charges)
+    mae = mean_absolute_error(true_charges, predicted_charges)
     r2 = r2_score(true_charges, predicted_charges)
 
     plt.figure(figsize=(8, 8))
-    plt.scatter(true_charges, predicted_charges, alpha=0.5, label='data point', edgecolors='w', s=50)
+    plt.scatter(true_charges, predicted_charges, alpha=0.5, edgecolors="w", s=40)
     min_val = min(min(true_charges), min(predicted_charges))
     max_val = max(max(true_charges), max(predicted_charges))
-    plt.plot([min_val, max_val], [min_val, max_val], 'r--', label='ideal line')
-    plt.xlabel('real charge', fontsize=14)
-    plt.ylabel('predict charge', fontsize=14)
-    plt.title('real vs predict', fontsize=16)
-    plt.text(0.05, 0.95, f'$R^2$ = {r2:.4f}\nMSE = {mse:.4f}', transform=plt.gca().transAxes,
-             fontsize=12, verticalalignment='top', bbox=dict(boxstyle='round', facecolor='white', alpha=0.5))
-    plt.legend(fontsize=12)
-    plt.grid(True)
+    plt.plot([min_val, max_val], [min_val, max_val], "r--")
+    plt.xlabel("True charge")
+    plt.ylabel("Predicted charge")
+    plt.title("Atomic Charge Prediction")
+    plt.text(
+        0.05,
+        0.95,
+        f"R2={r2:.4f}\nMSE={mse:.6f}\nMAE={mae:.6f}",
+        transform=plt.gca().transAxes,
+        verticalalignment="top",
+        bbox={"boxstyle": "round", "facecolor": "white", "alpha": 0.8},
+    )
     plt.tight_layout()
-    plt.savefig(plot_path)
+    plt.savefig(plot_path, dpi=300)
     plt.close()
-    
-def main():
-    parser = argparse.ArgumentParser(description="Predict atomic charges on test set")    
-    parser.add_argument('--checkpoint_path', type=str, required=True, help='Path to the trained model checkpoint (.pth file)')
-    parser.add_argument('--test_data_root', type=str, required=True, help='Path to the test dataset directory containing .xyz files for prediction')
-    parser.add_argument('--batch_size', type=int, default=1, help='Batch size for prediction (set to 1 for filename mapping)')
-    parser.add_argument('--charges_dir', type=str, default='charges', help='Directory to save charge predictions')
-    parser.add_argument('--plot_path', type=str, default='charge_predictions_scatter.png', help='Path to save the scatter plot')
-    parser.add_argument('--device', type=str, default='cpu', help='Device to run the model on (e.g., "cpu" or "cuda")')
+    return {"mse": float(mse), "mae": float(mae), "r2": float(r2)}
 
+
+def main():
+    parser = argparse.ArgumentParser(description="Evaluate a pretrained MET checkpoint on atomic charges.")
+    parser.add_argument("--checkpoint_path", type=str, required=True)
+    parser.add_argument("--test_data_root", type=str, default=None)
+    parser.add_argument("--test_data_manifest", type=str, default=None)
+    parser.add_argument("--batch_size", type=int, default=1)
+    parser.add_argument("--charges_dir", type=str, default="charges")
+    parser.add_argument("--plot_path", type=str, default="charge_predictions_scatter.png")
+    parser.add_argument("--metrics_json", type=str, default="charge_metrics.json")
+    parser.add_argument("--device", type=str, default="cpu")
+    parser.add_argument("--num_workers", type=int, default=0)
     args = parser.parse_args()
 
-    device = torch.device(args.device if torch.cuda.is_available() and args.device == 'cuda' else 'cpu')
+    device = resolve_device(args.device)
     print(f"Using device: {device}")
 
-    print("Loading model...")
     model = load_model(args.checkpoint_path, device)
-    print("Model loaded successfully.")
+    dataset = MoleculeDataset(root=args.test_data_root, manifest_path=args.test_data_manifest)
+    loader = DataLoader(dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers)
 
-    print("Loading test dataset...")
-    dataset = MoleculeDataset(root=args.test_data_root)
-    print(f"Total molecules in test dataset: {len(dataset)}")
-    
-    loader = DataLoader(
-        dataset, 
-        batch_size=args.batch_size, 
-        shuffle=False
-    )    
-    print("DataLoader created.")
+    true_charges, predicted_charges = predict(model, device, loader, Path(args.charges_dir))
+    metrics = plot_results(true_charges, predicted_charges, Path(args.plot_path))
+    save_json(
+        args.metrics_json,
+        {
+            "checkpoint_path": str(Path(args.checkpoint_path).resolve()),
+            "test_data_root": args.test_data_root,
+            "test_data_manifest": args.test_data_manifest,
+            "metrics": metrics,
+            "plot_path": str(Path(args.plot_path).resolve()),
+            "charges_dir": str(Path(args.charges_dir).resolve()),
+        },
+    )
+    print(f"R2={metrics['r2']:.4f} MSE={metrics['mse']:.6f} MAE={metrics['mae']:.6f}")
 
-    print("Starting prediction...")
-    true_charges, predicted_charges = predict(model, device, loader, args.charges_dir)
-    print("Prediction completed.")
 
-    print(f"Charge predictions saved in folder: {args.charges_dir}")
-
-    # 计算并绘制性能指标
-    print("Calculating performance metrics and plotting results...")
-    plot_results(true_charges, predicted_charges, args.plot_path)
-    print(f"Scatter plot saved at: {args.plot_path}")
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -1,215 +1,204 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import annotations
+
 import argparse
+import sys
+import time
+from pathlib import Path
+
+import matplotlib.pyplot as plt
 import torch
+import torch.optim as optim
+from sklearn.metrics import mean_squared_error, r2_score
 from torch import nn
 from torch_geometric.loader import DataLoader
-import torch.optim as optim
 from tqdm import tqdm
-import os
-import time
-import matplotlib.pyplot as plt
-from sklearn.metrics import r2_score
 
-# 假设 ComENetAutoEncoder 和 MoleculeDataset 在当前文件中定义或已导入
+ROOT_DIR = Path(__file__).resolve().parents[1]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.append(str(ROOT_DIR))
+
 from comenet4charge import ComENetAutoEncoder
 from dataset_without_charge import MoleculeDataset
+from met_utils import ensure_parent_dir, resolve_device, save_json, set_random_seed
 
-def train(model, device, loader, optimizer, criterion):
-    model.train()
-    total_loss = 0
+
+def run_epoch(model, device, loader, criterion, optimizer=None):
+    is_train = optimizer is not None
+    model.train(is_train)
+    total_loss = 0.0
+    total_nodes = 0
     all_predictions = []
     all_targets = []
-    for data in tqdm(loader, desc="Training"):
-        data = data.to(device)
-        optimizer.zero_grad()
-        _, predictions = model(data)  # 解包模型输出
-        loss = criterion(predictions, data.y)
-        loss.backward()
-        optimizer.step()
-        total_loss += loss.item() * data.num_graphs
 
-        # 收集预测值和目标值用于R²计算
-        all_predictions.append(predictions.detach().cpu())
-        all_targets.append(data.y.detach().cpu())
-
-    # 合并所有批次的预测和目标
-    all_predictions = torch.cat(all_predictions, dim=0).numpy()
-    all_targets = torch.cat(all_targets, dim=0).numpy()
-    # 计算R²
-    print('all_predictions:',all_predictions)
-    print('all_targets:',all_targets)
-    r2 = r2_score(all_targets, all_predictions, multioutput='uniform_average')
-    return total_loss / len(loader.dataset), r2
-
-def validate(model, device, loader, criterion):
-    model.eval()
-    total_loss = 0
-    all_predictions = []
-    all_targets = []
-    with torch.no_grad():
-        for data in tqdm(loader, desc="Validation"):
+    context = torch.enable_grad() if is_train else torch.no_grad()
+    with context:
+        for data in tqdm(loader, desc="Training" if is_train else "Validation"):
             data = data.to(device)
-            _, predictions = model(data)  # 解包模型输出
+            if optimizer is not None:
+                optimizer.zero_grad()
+            _, predictions = model(data)
             loss = criterion(predictions, data.y)
-            total_loss += loss.item() * data.num_graphs
+            if optimizer is not None:
+                loss.backward()
+                optimizer.step()
+            batch_nodes = data.y.numel()
+            total_loss += loss.item() * batch_nodes
+            total_nodes += batch_nodes
+            all_predictions.append(predictions.detach().cpu().view(-1))
+            all_targets.append(data.y.detach().cpu().view(-1))
 
-            # 收集预测值和目标值用于R²计算
-            all_predictions.append(predictions.detach().cpu())
-            all_targets.append(data.y.detach().cpu())
+    predictions = torch.cat(all_predictions).numpy()
+    targets = torch.cat(all_targets).numpy()
+    metrics = {
+        "loss": total_loss / max(1, total_nodes),
+        "mse": float(mean_squared_error(targets, predictions)),
+        "r2": float(r2_score(targets, predictions)),
+    }
+    return metrics
 
-    # 合并所有批次的预测和目标
-    all_predictions = torch.cat(all_predictions, dim=0).numpy()
-    all_targets = torch.cat(all_targets, dim=0).numpy()
-    # 计算R²
-    r2 = r2_score(all_targets, all_predictions, multioutput='uniform_average')
-    return total_loss / len(loader.dataset), r2
 
-def plot_metrics(train_losses, val_losses, train_r2, val_r2, save_path='training_plot.png'):
-    epochs = range(1, len(train_losses) + 1)
-
+def plot_metrics(history, save_path: Path):
+    epochs = range(1, len(history["train_loss"]) + 1)
     fig, ax1 = plt.subplots(figsize=(10, 6))
+    ax1.set_xlabel("Epoch")
+    ax1.set_ylabel("MSE loss", color="tab:red")
+    ax1.plot(epochs, history["train_loss"], color="tab:red", label="Train")
+    ax1.plot(epochs, history["val_loss"], color="tab:red", linestyle="--", label="Valid")
+    ax1.tick_params(axis="y", labelcolor="tab:red")
+    ax1.legend(loc="upper left")
 
-    color = 'tab:red'
-    ax1.set_xlabel('Epoch')
-    ax1.set_ylabel('Loss', color=color)
-    ax1.plot(epochs, train_losses, label='Train Loss', color=color, linestyle='-')
-    ax1.plot(epochs, val_losses, label='Validation Loss', color=color, linestyle='--')
-    ax1.tick_params(axis='y', labelcolor=color)
-    ax1.legend(loc='upper left')
-    # 根据实际损失范围调整
-    ax1.set_ylim(0, max(max(train_losses), max(val_losses)) * 1.1)
-    
-    ax2 = ax1.twinx()  # 共享x轴
+    ax2 = ax1.twinx()
+    ax2.set_ylabel("R2", color="tab:blue")
+    ax2.plot(epochs, history["train_r2"], color="tab:blue", label="Train R2")
+    ax2.plot(epochs, history["val_r2"], color="tab:blue", linestyle="--", label="Valid R2")
+    ax2.tick_params(axis="y", labelcolor="tab:blue")
+    ax2.legend(loc="upper right")
 
-    color = 'tab:blue'
-    ax2.set_ylabel('R²', color=color)
-    ax2.plot(epochs, train_r2, label='Train R²', color=color, linestyle='-')
-    ax2.plot(epochs, val_r2, label='Validation R²', color=color, linestyle='--')
-    ax2.tick_params(axis='y', labelcolor=color)
-    ax2.legend(loc='upper right')
-    ax2.set_ylim(-1, 1)  # 设置右侧坐标轴取值范围为 -1 到 1
-    
-    plt.title('Training and Validation Loss & R²')
+    plt.title("Pretraining Metrics")
     fig.tight_layout()
-    plt.savefig(save_path)
-    # plt.show()
+    plt.savefig(save_path, dpi=300)
+    plt.close(fig)
+
 
 def main():
-    parser = argparse.ArgumentParser(description="Train ComENet for Atomic Charge Prediction")
-    parser.add_argument('--data_root', type=str, required=True, help='Path to the dataset root directory containing .xyz files')
-    parser.add_argument('--batch_size', type=int, default=32, help='Batch size for training')
-    parser.add_argument('--lr', type=float, default=1e-3, help='Initial learning rate')
-    parser.add_argument('--epochs', type=int, default=100, help='Number of training epochs')
-    parser.add_argument('--save_path', type=str, default='best_comenet_model.pth', help='Path to save the best model')
-    parser.add_argument('--hidden_channels', type=int, default=256, help='Hidden embedding size')
-    parser.add_argument('--middle_channels', type=int, default=256, help='Middle embedding size for two layer linear block')
-    parser.add_argument('--atom_embedding_dim', type=int, default=128, help='The output dim of pretraining model')
-    parser.add_argument('--num_spherical', type=int, default=5, help='Number of spherical bisis')
-    parser.add_argument('--num_radial', type=int, default=8, help='Number of radial bisis')
-    parser.add_argument('--num_layers', type=int, default=4, help='Number of interaction blocks')
-    parser.add_argument('--transformer_layers', type=int, default=1, help='Number of transformer layers in each interaction block')
-    parser.add_argument('--transformer_heads_z', type=int, default=1, help='Number of attention heads in transformer for z')
-    parser.add_argument('--cutoff', type=float, default=8.0, help='Cutoff distance for interatomic interactions')
-    parser.add_argument('--device', type=str, default='cpu', help='The device for training model')
-
+    parser = argparse.ArgumentParser(description="Train MET for atomic charge prediction.")
+    parser.add_argument("--data_root", type=str, default=None)
+    parser.add_argument("--data_manifest", type=str, default=None)
+    parser.add_argument("--batch_size", type=int, default=32)
+    parser.add_argument("--lr", type=float, default=1e-3)
+    parser.add_argument("--epochs", type=int, default=100)
+    parser.add_argument("--save_path", type=str, default="best_comenet_model.pth")
+    parser.add_argument("--metrics_json", type=str, default="pretrain_metrics.json")
+    parser.add_argument("--hidden_channels", type=int, default=256)
+    parser.add_argument("--middle_channels", type=int, default=256)
+    parser.add_argument("--atom_embedding_dim", type=int, default=128)
+    parser.add_argument("--num_spherical", type=int, default=5)
+    parser.add_argument("--num_radial", type=int, default=8)
+    parser.add_argument("--num_layers", type=int, default=4)
+    parser.add_argument("--transformer_layers", type=int, default=1)
+    parser.add_argument("--transformer_heads_z", type=int, default=1)
+    parser.add_argument("--cutoff", type=float, default=8.0)
+    parser.add_argument("--device", type=str, default="cpu")
+    parser.add_argument("--val_split", type=float, default=0.2)
+    parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--num_workers", type=int, default=0)
     args = parser.parse_args()
 
-    # 设置设备
-    device = torch.device(args.device if torch.cuda.is_available() and args.device == 'cuda' else 'cpu')
-    print(f'Using device: {device}')
+    set_random_seed(args.seed)
+    device = resolve_device(args.device)
+    print(f"Using device: {device}")
 
-    # 加载数据集
     start_time = time.time()
-    dataset = MoleculeDataset(root=args.data_root)
-    print(dataset)
-    dataset = dataset.shuffle()
-
-    # 划分训练集和验证集
-    train_size = int(0.8 * len(dataset))
+    dataset = MoleculeDataset(root=args.data_root, manifest_path=args.data_manifest)
+    generator = torch.Generator().manual_seed(args.seed)
+    train_size = int((1 - args.val_split) * len(dataset))
     val_size = len(dataset) - train_size
-    train_dataset, val_dataset = torch.utils.data.random_split(dataset, [train_size, val_size])
+    train_dataset, val_dataset = torch.utils.data.random_split(dataset, [train_size, val_size], generator=generator)
 
-    # 创建数据加载器
-    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
-    val_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False)
+    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers)
+    val_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers)
 
-    # 初始化模型
     model = ComENetAutoEncoder(
         cutoff=args.cutoff,
         num_layers=args.num_layers,
         hidden_channels=args.hidden_channels,
         middle_channels=args.middle_channels,
         atom_embedding_dim=args.atom_embedding_dim,
-        out_channels=1,  # 每个节点一个电荷值
+        out_channels=1,
         num_radial=args.num_radial,
         num_spherical=args.num_spherical,
         num_output_layers=3,
         transformer_layers=args.transformer_layers,
         nhead_z=args.transformer_heads_z,
-        device=args.device
+        device=str(device),
     ).to(device)
 
-    # 计算总参数量
-    total_params = sum(p.numel() for p in model.parameters())
-    print("模型的总参数量:", total_params)
-
-    # 定义优化器和损失函数
     optimizer = optim.Adam(model.parameters(), lr=args.lr)
-    criterion = nn.MSELoss()  # 或使用 WeightedMSELoss(num_properties=1) 如果需要权重
+    criterion = nn.MSELoss()
+    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode="max", factor=0.1, patience=20)
 
-    # 定义学习率调度器
-    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='max', factor=0.1, patience=20, verbose=True)
-    
-    # 训练循环
-    best_val_loss = float('inf')
-    train_losses = []
-    val_losses = []
-    train_r2 = []
-    val_r2 = []
+    best_val_loss = float("inf")
+    history = {"train_loss": [], "val_loss": [], "train_r2": [], "val_r2": []}
 
     for epoch in range(1, args.epochs + 1):
         print(f"Epoch {epoch}/{args.epochs}")
-        train_loss, train_r2_epoch = train(model, device, train_loader, optimizer, criterion)
-        val_loss, val_r2_epoch = validate(model, device, val_loader, criterion)
-        print(f"Train Loss: {train_loss:.6f}, Train R²: {train_r2_epoch:.4f}, Val Loss: {val_loss:.6f}, Val R²: {val_r2_epoch:.4f}")
+        train_metrics = run_epoch(model, device, train_loader, criterion, optimizer)
+        val_metrics = run_epoch(model, device, val_loader, criterion)
+        scheduler.step(val_metrics["r2"])
 
-        train_losses.append(train_loss)
-        val_losses.append(val_loss)
-        train_r2.append(train_r2_epoch)
-        val_r2.append(val_r2_epoch)
-        
-        # 更新学习率调度器
-        scheduler.step(val_r2_epoch)
-        
-        # 保存最佳模型
-        if val_loss < best_val_loss:
-            best_val_loss = val_loss
-            torch.save({
-                'model_state_dict': model.state_dict(),
-                'cutoff': args.cutoff,
-                'num_layers': args.num_layers,
-                'hidden_channels': args.hidden_channels,
-                'middle_channels': args.middle_channels,
-                'atom_embedding_dim': args.atom_embedding_dim,
-                'out_channels': 1,  # 每个节点一个电荷值
-                'num_radial': args.num_radial,
-                'num_spherical': args.num_spherical,
-                'num_output_layers': 3,
-                'transformer_layers': args.transformer_layers,
-                'nhead_z': args.transformer_heads_z,
-                'device': args.device
-            }, args.save_path)
-            print(f"Saved Best Model with Val Loss: {val_loss:.6f}")
+        history["train_loss"].append(train_metrics["loss"])
+        history["val_loss"].append(val_metrics["loss"])
+        history["train_r2"].append(train_metrics["r2"])
+        history["val_r2"].append(val_metrics["r2"])
 
-    print("Training Complete. Best Val Loss:", best_val_loss)
-    
-    end_time = time.time()
-    elapsed_time = end_time - start_time
-    print(f"训练时间: {elapsed_time:.2f} 秒")
+        print(
+            f"train_loss={train_metrics['loss']:.6f} train_r2={train_metrics['r2']:.4f} "
+            f"val_loss={val_metrics['loss']:.6f} val_r2={val_metrics['r2']:.4f}"
+        )
 
-    # 绘制训练和验证损失以及R²
-    plot_metrics(train_losses, val_losses, train_r2, val_r2, save_path='training_plot.png')
+        if val_metrics["loss"] < best_val_loss:
+            best_val_loss = val_metrics["loss"]
+            save_path = ensure_parent_dir(args.save_path)
+            torch.save(
+                {
+                    "model_state_dict": model.state_dict(),
+                    "cutoff": args.cutoff,
+                    "num_layers": args.num_layers,
+                    "hidden_channels": args.hidden_channels,
+                    "middle_channels": args.middle_channels,
+                    "atom_embedding_dim": args.atom_embedding_dim,
+                    "out_channels": 1,
+                    "num_radial": args.num_radial,
+                    "num_spherical": args.num_spherical,
+                    "num_output_layers": 3,
+                    "transformer_layers": args.transformer_layers,
+                    "nhead_z": args.transformer_heads_z,
+                    "metrics": {"train": train_metrics, "valid": val_metrics},
+                    "seed": args.seed,
+                },
+                save_path,
+            )
+            print(f"Saved best model to {save_path}")
 
-if __name__ == '__main__':
+    plot_metrics(history, Path("training_plot.png"))
+
+    elapsed = time.time() - start_time
+    save_json(
+        args.metrics_json,
+        {
+            "history": history,
+            "best_val_loss": best_val_loss,
+            "elapsed_seconds": elapsed,
+            "save_path": str(Path(args.save_path).resolve()),
+            "data_root": args.data_root,
+            "data_manifest": args.data_manifest,
+            "seed": args.seed,
+        },
+    )
+    print(f"Training finished in {elapsed:.2f} seconds.")
+
+
+if __name__ == "__main__":
     main()

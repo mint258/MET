@@ -1,0 +1,44 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Local environments and editor files
+.venv/
+venv/
+.conda/
+.idea/
+.vscode/
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# LMDB runtime lock files
+*.lmdb-lock
+
+# Local experiment outputs and smoke-test artifacts
+outputs/
+training_plot.png
+charge_predictions_scatter.png
+property_metrics.json
+charge_metrics.json
+fine_tune_metrics.json
+pretrain_metrics.json
+property_plots/
+charges/
+plots/
+
+# Temporary local helper data
+*.tmp
+*.temp
+*.log
+
+# Old XYZ datasets kept locally but not uploaded
+data/QM9/full_database/
+data/QM9/test_database/
+data/QM9/train_valid_database/
+data/QM7/full_database/
+data/QM7/test_database/
+data/QM7/train_database_300/

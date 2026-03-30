@@ -1,194 +1,156 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-property_predict_single.py
----------------------------------------------------------
-单模型性质预测散点图（Nature风格）：
-  - 支持 “FineTunedModel (finetune)” 与 “ComENet-for-property (property)”
-  - 统一评估与作图：真实值 vs 预测值
----------------------------------------------------------
-"""
 
-import matplotlib as mpl
-mpl.rcParams.update({
-     'font.family':      'Arial',
-     'font.size':        14,
-     'axes.linewidth':   1.0,
-     'xtick.direction':  'in',
-     'ytick.direction':  'in',
-     'xtick.major.size': 3,
-     'ytick.major.size': 3,
-     'xtick.major.width':0.8,
-     'ytick.major.width':0.8,
-     'lines.markersize': 8,
-     'lines.linewidth':  2.0,
-     'legend.frameon':   False,
-})
-mpl.rcParams['svg.fonttype'] = 'none'
+from __future__ import annotations
 
-import argparse, os, torch, numpy as np, matplotlib.pyplot as plt
-from sklearn.metrics import r2_score, mean_squared_error
+import argparse
+import sys
+from pathlib import Path
+from typing import Dict, List, Tuple
+
+import matplotlib.pyplot as plt
+import numpy as np
+import torch
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from torch.utils.data import DataLoader
 from tqdm import tqdm
-from torch_geometric.loader import DataLoader
 
-# 依赖（与你的环境保持一致）
-from dataset_finetune import MoleculeDataset
-from fine_tune_training import custom_collate_fn_factory
+ROOT_DIR = Path(__file__).resolve().parents[1]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.append(str(ROOT_DIR))
+
 from FineTunedModel import FineTunedModel
-from comenet4property import ComENetAutoEncoder as PropertyNet
+from dataset_finetune import MoleculeDataset
+from fine_tune_training import aggregate_conformer_predictions, custom_collate_fn_factory
+from met_utils import ensure_parent_dir, resolve_device, save_json
 
-# ======================= 数据集封装 ======================= #
-class PropertyPredictionDataset(MoleculeDataset):
-    """返回 (Data, target_tensor)，同时在 data.y 中写入 target 便于 PropertyNet 使用"""
-    def __init__(self, root, target_property):
-        super().__init__(root)
-        if target_property not in self.all_properties:
-            raise ValueError(f"{target_property} 不在数据集中可用属性范围 {self.all_properties}")
-        self.idx = self.property_to_index[target_property]
 
-    def get(self, idx):
-        d = super().get(idx)
-        target = d.scalar_props[self.idx:self.idx+1]      # shape [1]
-        d.y = target                                      # 供 PropertyNet 内部断言使用
-        return d, target
-
-# ========================  模型加载  ====================== #
-def load_model_generic(ckpt_path: str,
-                       model_type: str,
-                       device: torch.device):
-    """
-    根据 model_type 或 checkpoint 字段自动恢复模型.
-    返回：.eval() 后的 model 与可读标签 label
-    """
-    if not os.path.exists(ckpt_path):
-        raise FileNotFoundError(ckpt_path)
-    ckpt = torch.load(ckpt_path, map_location=device)
-
-    # 自动判别类型（如未指定）
-    if not model_type:
-        if 'pretrained_checkpoint_path' in ckpt and 'molecular_transformer_args' in ckpt:
-            model_type = 'finetune'
-        elif 'weights' in ckpt and 'loss' in ckpt:
-            model_type = 'property'
-        else:
-            raise ValueError(f"无法自动识别 {ckpt_path} 的模型类型，请用 --model 指定（finetune/property）")
-
-    if model_type == 'finetune':
-        model = FineTunedModel(
-            pretrained_checkpoint_path = ckpt_path,
-            device                     = device,
-            molecular_transformer_args = ckpt['molecular_transformer_args']
-        ).to(device)
-        model.load_state_dict(ckpt['model_state_dict'])
-        label = 'Finetuned Model'
-
-    elif model_type == 'property':
-        model = PropertyNet(
-            cutoff=ckpt.get('cutoff', 8.0),
-            num_layers=ckpt.get('num_layers',4),
-            hidden_channels=ckpt.get('hidden_channels',256),
-            middle_channels=ckpt.get('middle_channels',256),
-            out_channels=ckpt.get('out_channels', 1),
-            num_radial=ckpt.get('num_radial',8),
-            num_spherical=ckpt.get('num_spherical',5),
-            num_output_layers=1,
-            device=device
-        ).to(device)
-        model.load_state_dict(ckpt['model_state_dict'])
-        label = 'Property Model'
-
-    else:
-        raise ValueError(f"暂不支持的 model_type '{model_type}'")
-
+def load_finetuned_model(checkpoint_path: str, device: torch.device) -> Tuple[FineTunedModel, Dict]:
+    checkpoint = torch.load(checkpoint_path, map_location=device)
+    model = FineTunedModel(
+        pretrained_checkpoint_path=checkpoint_path,
+        device=device,
+        molecular_transformer_args=checkpoint["molecular_transformer_args"],
+    ).to(device)
+    model.load_state_dict(checkpoint["model_state_dict"])
     model.eval()
-    return model, label
+    return model, checkpoint
 
-# ============ 统一预测 (兼容两种 forward) ============== #
-@torch.no_grad()
-def predict_once(model, loader, device):
-    true_vals, pred_vals = [], []
-    for batch_data, targets in tqdm(loader, leave=False):
-        batch_data = batch_data.to(device)
-        out = model(batch_data)
-        if isinstance(out, tuple):      # PropertyNet 返回 (emb, preds)
-            preds = out[1]
-        else:                           # FineTunedModel 直接返回 preds
-            preds = out
-        preds = preds.squeeze(-1).cpu().numpy()
-        tars  = targets.squeeze(-1).cpu().numpy()
-        true_vals.extend(tars.tolist())
-        pred_vals.extend(preds.tolist())
-    return true_vals, pred_vals
 
-# =============== 单模型散点图 (Nature 风格) ================= #
-def plot_single_nature(true_vals, pred_vals, label, prop_name, save_path):
-    fig, ax = plt.subplots(figsize=(6, 6))  # 方形画布
+def evaluate(model, loader, device) -> Tuple[np.ndarray, np.ndarray]:
+    true_batches: List[torch.Tensor] = []
+    pred_batches: List[torch.Tensor] = []
+    with torch.no_grad():
+        for batch_data, targets, sample_index in tqdm(loader, desc="Evaluating"):
+            batch_data = batch_data.to(device)
+            sample_index = sample_index.to(device)
+            predictions = model(batch_data)
+            predictions = aggregate_conformer_predictions(predictions, sample_index, num_samples=targets.shape[0])
+            true_batches.append(targets.cpu())
+            pred_batches.append(predictions.cpu())
+    return torch.cat(true_batches, dim=0).numpy(), torch.cat(pred_batches, dim=0).numpy()
 
-    # 坐标轴范围 & 等比例
-    all_values = true_vals + pred_vals
-    mn, mx = min(all_values), max(all_values)
-    padding = (mx - mn) * 0.05 if mx > mn else 1.0
-    mn_pad, mx_pad = mn - padding, mx + padding
-    ax.set_xlim(mn_pad, mx_pad); ax.set_ylim(mn_pad, mx_pad)
-    ax.set_aspect('equal', adjustable='box')
-    plt.axis('square')
 
-    # 散点
-    ax.scatter(true_vals, pred_vals,
-               marker='o', s=64, c='#8aafc9', alpha=0.7,
-               edgecolor='white', linewidth=1.0, label=label, zorder=2)
+def per_property_metrics(y_true: np.ndarray, y_pred: np.ndarray, property_names: List[str]) -> Dict[str, Dict[str, float]]:
+    metrics = {}
+    for idx, property_name in enumerate(property_names):
+        true_values = y_true[:, idx]
+        pred_values = y_pred[:, idx]
+        metrics[property_name] = {
+            "mae": float(mean_absolute_error(true_values, pred_values)),
+            "rmse": float(np.sqrt(mean_squared_error(true_values, pred_values))),
+            "r2": float(r2_score(true_values, pred_values)),
+        }
+    return metrics
 
-    # 理想对角线
-    ax.plot(ax.get_xlim(), ax.get_xlim(),
-            linestyle='--', color='black', linewidth=1.2, zorder=1)
 
-    # 标签
-    ax.set_xlabel('Real'); ax.set_ylabel('Predicted')
-
-    # 统计指标
-    mse = mean_squared_error(true_vals, pred_vals)
-    r2  = r2_score(true_vals, pred_vals)
-    ax.text(0.05, 0.95, f'{label}\nR²={r2:.3f}, MSE={mse:.3f}',
-            transform=ax.transAxes, ha='left', va='top',
-            color='#4a4a4a', zorder=3)
-
-    ax.legend(loc='lower right')
+def plot_scatter(true_values: np.ndarray, pred_values: np.ndarray, property_name: str, output_path: Path) -> None:
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    fig, ax = plt.subplots(figsize=(6, 6))
+    ax.scatter(true_values, pred_values, alpha=0.7, edgecolors="white", linewidths=0.8)
+    min_val = min(true_values.min(), pred_values.min())
+    max_val = max(true_values.max(), pred_values.max())
+    ax.plot([min_val, max_val], [min_val, max_val], linestyle="--", color="black")
+    ax.set_xlabel("True")
+    ax.set_ylabel("Predicted")
+    ax.set_title(property_name)
+    ax.set_aspect("equal", adjustable="box")
     plt.tight_layout()
-    plt.savefig(save_path, dpi=300)
-    plt.close()
-    print(f'✔ Saved plot to {save_path} | R²={r2:.4f}, MSE={mse:.4f}')
+    plt.savefig(output_path, dpi=300)
+    plt.close(fig)
 
-# =========================== CLI =========================== #
+
 def main():
-    p = argparse.ArgumentParser("Single-model property prediction evaluation")
-    p.add_argument('--checkpoint', required=True, help='待评估模型 checkpoint')
-    p.add_argument('--model', choices=['finetune','property'], default=None,
-                   help='模型类型（默认自动识别）')
-    p.add_argument('--test_data_root', required=True, help='测试数据根目录')
-    p.add_argument('--target_property', required=True, help='评估的单一目标性质名称')
-    p.add_argument('--batch_size', type=int, default=8)
-    p.add_argument('--device', default='cuda')
-    p.add_argument('--plot_path', default='single_model_plot.png')
-    args = p.parse_args()
+    parser = argparse.ArgumentParser(description="Evaluate a fine-tuned MET checkpoint.")
+    parser.add_argument("--checkpoint", required=True)
+    parser.add_argument("--test_data_root", default=None)
+    parser.add_argument("--test_data_manifest", default=None)
+    parser.add_argument("--target_property", nargs="*", default=None)
+    parser.add_argument("--batch_size", type=int, default=8)
+    parser.add_argument("--device", default="cuda")
+    parser.add_argument("--plot_dir", default="property_plots")
+    parser.add_argument("--metrics_json", default="property_metrics.json")
+    parser.add_argument("--num_workers", type=int, default=0)
+    parser.add_argument("--num_conformers", type=int, default=None)
+    parser.add_argument("--conformer_seed", type=int, default=None)
+    parser.add_argument("--disable_uff_optimization", action="store_true")
+    args = parser.parse_args()
 
-    device = torch.device(args.device if torch.cuda.is_available() and args.device=='cuda' else 'cpu')
-    print(f'Using device: {device}')
+    device = resolve_device(args.device)
+    print(f"Using device: {device}")
 
-    # 数据
-    dataset = PropertyPredictionDataset(args.test_data_root, args.target_property)
-    loader  = DataLoader(dataset, batch_size=args.batch_size,
-                         shuffle=False, num_workers=4,
-                         collate_fn=custom_collate_fn_factory)
+    model, checkpoint = load_finetuned_model(args.checkpoint, device)
+    data_config = checkpoint.get("data_config", {})
+    num_conformers = args.num_conformers if args.num_conformers is not None else data_config.get("num_conformers", 1)
+    conformer_seed = args.conformer_seed if args.conformer_seed is not None else data_config.get("conformer_seed", 2024)
+    use_uff_optimization = data_config.get("use_uff_optimization", True)
+    if args.disable_uff_optimization:
+        use_uff_optimization = False
 
-    # 模型
-    model, label = load_model_generic(args.checkpoint, args.model, device)
-    print(f'Loaded {label}')
+    dataset = MoleculeDataset(
+        root=args.test_data_root,
+        manifest_path=args.test_data_manifest,
+        num_conformers=num_conformers,
+        conformer_seed=conformer_seed,
+        use_uff_optimization=use_uff_optimization,
+    )
+    property_names = args.target_property or checkpoint.get("target_properties", [])
+    if not property_names:
+        raise ValueError("No target properties were provided and none were stored in the checkpoint.")
+    property_names = [dataset.resolve_property_name(name) for name in property_names]
+    target_indices = [dataset.property_to_index[name] for name in property_names]
 
-    # 预测
-    true_vals, pred_vals = predict_once(model, loader, device)
+    loader = DataLoader(
+        dataset,
+        batch_size=args.batch_size,
+        shuffle=False,
+        num_workers=args.num_workers,
+        collate_fn=custom_collate_fn_factory(target_indices),
+    )
 
-    # 作图
-    plot_single_nature(true_vals, pred_vals, label, args.target_property, args.plot_path)
+    y_true, y_pred = evaluate(model, loader, device)
+    metrics = per_property_metrics(y_true, y_pred, property_names)
 
-if __name__ == '__main__':
+    plot_dir = Path(args.plot_dir)
+    for idx, property_name in enumerate(property_names):
+        plot_scatter(y_true[:, idx], y_pred[:, idx], property_name, plot_dir / f"{property_name}.png")
+
+    payload = {
+        "checkpoint": str(Path(args.checkpoint).resolve()),
+        "target_properties": property_names,
+        "metrics": metrics,
+        "test_data_root": args.test_data_root,
+        "test_data_manifest": args.test_data_manifest,
+        "data_config": {
+            "num_conformers": num_conformers,
+            "conformer_seed": conformer_seed,
+            "use_uff_optimization": use_uff_optimization,
+        },
+    }
+    save_json(args.metrics_json, payload)
+    for name, metric in metrics.items():
+        print(f"{name}: MAE={metric['mae']:.6f} RMSE={metric['rmse']:.6f} R2={metric['r2']:.4f}")
+
+
+if __name__ == "__main__":
     main()
